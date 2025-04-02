@@ -1,0 +1,50 @@
+import React from "react";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+//console.log("Jobs Data in JobStatusPieChart:", jobs);
+
+
+const JobStatusPieChart = ({ jobs }) => {
+  // Count occurrences of each job status
+  const statusCounts = jobs.reduce((acc, job) => {
+    const status = job.status?.trim();
+    if(status){
+      acc[job.status] = (acc[job.status] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  // Convert statusCounts to array format for recharts
+  const data = Object.entries(statusCounts).map(([status, count]) => ({
+    name: status,
+    value: count,
+  }));
+
+  // Define colors for the chart
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6666"];
+
+  return (
+    <div>
+      <h2>Job Status Distribution</h2>
+      <PieChart width={400} height={400}>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          outerRadius={150}
+          fill="#8884d8"
+          dataKey="value"
+          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
+    </div>
+  );
+};
+
+export default JobStatusPieChart;

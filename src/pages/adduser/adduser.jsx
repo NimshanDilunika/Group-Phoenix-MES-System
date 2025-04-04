@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { User, Mail, Lock, Shield, Check, Sun, Moon } from "lucide-react";
+import { User, Mail, Lock, Shield, Check, Sun, Moon, CreditCard, Phone, UserPlus } from "lucide-react";
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 
 const AddUser = () => {
@@ -7,8 +7,11 @@ const AddUser = () => {
   
   const [formData, setFormData] = useState({
     fullName: "",
+    username: "",
     email: "",
     password: "",
+    idCardNumber: "",
+    phoneNumber: "",
     role: "Administrator"
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -37,8 +40,11 @@ const AddUser = () => {
         setSuccessMessage("");
         setFormData({
           fullName: "",
+          username: "",
           email: "",
           password: "",
+          idCardNumber: "",
+          phoneNumber: "",
           role: "Administrator"
         });
       }, 3000);
@@ -48,6 +54,11 @@ const AddUser = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  // Define background and text colors for input fields
+  const inputBgColor = isDarkMode ? 'bg-gray-800' : 'bg-gray-200';
+  const inputTextColor = isDarkMode ? 'text-white' : 'text-gray-800';
+  const placeholderColor = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-500';
 
   return (
     <div className={`p-6 space-y-8 min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'}`}>
@@ -74,7 +85,7 @@ const AddUser = () => {
             {/* Full Name */}
             <div className="space-y-2">
               <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Full Name</label>
-              <div className={`flex items-center space-x-2 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} p-3 rounded-lg`}>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
                 <User size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <input
                   type="text"
@@ -82,7 +93,23 @@ const AddUser = () => {
                   value={formData.fullName}
                   onChange={handleChange}
                   placeholder="Enter full name"
-                  className={`bg-transparent border-none ${isDarkMode ? 'text-white placeholder-gray-500' : 'text-gray-800 placeholder-gray-400'} focus:outline-none w-full`}
+                  className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
+                />
+              </div>
+            </div>
+
+            {/* Username */}
+            <div className="space-y-2">
+              <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Username</label>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
+                <UserPlus size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Enter username"
+                  className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
                 />
               </div>
             </div>
@@ -90,7 +117,7 @@ const AddUser = () => {
             {/* Email */}
             <div className="space-y-2">
               <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Email</label>
-              <div className={`flex items-center space-x-2 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} p-3 rounded-lg`}>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
                 <Mail size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <input
                   type="email"
@@ -98,7 +125,7 @@ const AddUser = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter email"
-                  className={`bg-transparent border-none ${isDarkMode ? 'text-white placeholder-gray-500' : 'text-gray-800 placeholder-gray-400'} focus:outline-none w-full`}
+                  className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
                   required
                 />
               </div>
@@ -107,7 +134,7 @@ const AddUser = () => {
             {/* Password */}
             <div className="space-y-2">
               <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Password</label>
-              <div className={`flex items-center space-x-2 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} p-3 rounded-lg`}>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
                 <Lock size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -115,7 +142,7 @@ const AddUser = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter password"
-                  className={`bg-transparent border-none ${isDarkMode ? 'text-white placeholder-gray-500' : 'text-gray-800 placeholder-gray-400'} focus:outline-none w-full`}
+                  className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
                   required
                 />
                 <button
@@ -128,20 +155,52 @@ const AddUser = () => {
               </div>
             </div>
 
+            {/* ID Card Number */}
+            <div className="space-y-2">
+              <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>ID Card Number</label>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
+                <CreditCard size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <input
+                  type="text"
+                  name="idCardNumber"
+                  value={formData.idCardNumber}
+                  onChange={handleChange}
+                  placeholder="Enter ID card number"
+                  className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
+                />
+              </div>
+            </div>
+
+            {/* Phone Number */}
+            <div className="space-y-2">
+              <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Phone Number</label>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
+                <Phone size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="Enter phone number"
+                  className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
+                />
+              </div>
+            </div>
+
             {/* Role */}
             <div className="space-y-2">
               <label className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Role</label>
-              <div className={`flex items-center space-x-2 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} p-3 rounded-lg`}>
+              <div className={`flex items-center space-x-2 ${inputBgColor} p-3 rounded-lg`}>
                 <Shield size={20} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className={`bg-transparent border-none ${isDarkMode ? 'text-white' : 'text-gray-800'} focus:outline-none w-full appearance-none`}
+                  className={`bg-transparent border-none ${inputTextColor} focus:outline-none w-full appearance-none`}
                 >
-                  <option value="Administrator" className={isDarkMode ? 'bg-gray-900' : 'bg-white'}>Administrator</option>
-                  <option value="Manager" className={isDarkMode ? 'bg-gray-900' : 'bg-white'}>Manager</option>
-                  <option value="Staff" className={isDarkMode ? 'bg-gray-900' : 'bg-white'}>Staff</option>
+                  <option value="Administrator" className={isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}>Administrator</option>
+                  <option value="Manager" className={isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}>Manager</option>
+                  <option value="Staff" className={isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}>Staff</option>
                 </select>
               </div>
             </div>

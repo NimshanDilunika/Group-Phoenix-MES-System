@@ -10,7 +10,7 @@ const App = () => {
   return (
     <ThemeProvider>
     <Router>
-      <LoginPage />
+      <Dashboard />
       
     </Router>
     </ThemeProvider>

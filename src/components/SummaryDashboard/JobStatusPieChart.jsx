@@ -4,6 +4,10 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 
 
 const JobStatusPieChart = ({ jobs }) => {
+  if (!Array.isArray(jobs)) {
+    console.error("Expected jobs to be an array but received", jobs);
+    return null;
+  }
   // Count occurrences of each job status
   const statusCounts = jobs.reduce((acc, job) => {
     const status = job.status?.trim();
@@ -23,9 +27,8 @@ const JobStatusPieChart = ({ jobs }) => {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6666"];
 
   return (
-    <div>
-      <h2>Job Status Distribution</h2>
-      <PieChart width={400} height={400}>
+    <div >
+      <PieChart width={600} height={400}>
         <Pie
           data={data}
           cx="50%"

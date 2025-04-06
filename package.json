@@ -16,6 +16,7 @@
     "@mui/material": "^6.4.9",
     "@tailwindcss/vite": "^4.0.17",
     "framer-motion": "^12.6.2",
+    "html2pdf.js": "^0.10.3",
     "lucide-react": "^0.486.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.2.1",

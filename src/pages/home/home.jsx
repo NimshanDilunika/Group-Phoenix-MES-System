@@ -8,9 +8,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { PiClockClockwiseFill } from "react-icons/pi";
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import JobHome from "../JobHome/JobHome"; // Assuming JobHome is in a separate file
-import Summary from '../summary/summary';
 import '../../components/SummaryDashboard/JobStatusPieChart';
-import JobStatusPieChart from "../../components/SummaryDashboard/JobStatusPieChart";
 
 const Home = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);

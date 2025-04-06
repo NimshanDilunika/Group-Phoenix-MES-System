@@ -8,6 +8,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { PiClockClockwiseFill } from "react-icons/pi";
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import JobHome from "../JobHome/JobHome"; // Assuming JobHome is in a separate file
+import '../../components/SummaryDashboard/JobStatusPieChart';
 
 const Home = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
@@ -190,7 +191,9 @@ const Home = () => {
   }
 
   return (
+    
     <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} space-y-8 p-6 min-h-screen`}>
+      {/*<JobStatusPieChart jobs={jobs}/>*/}
       {/* Header Section */}
       <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} rounded-xl p-6 shadow-xl mx-auto`}>
         <div className="flex justify-between items-center mb-4">
@@ -338,6 +341,7 @@ const Home = () => {
       ) : (
         <p className="text-center text-gray-500">No jobs found</p>
       )}
+      
     </div>
   );
 };

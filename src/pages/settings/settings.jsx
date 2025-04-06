@@ -1,6 +1,6 @@
 import React from "react";
 
-const Settings = () => {
+const ProfileSettings = () => {
   return (
     <div>
       <h1>Add Settings</h1>
@@ -9,4 +9,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default ProfileSettings;

@@ -7,11 +7,13 @@ import { LuListTodo } from "react-icons/lu";
 import { IoIosAddCircle } from "react-icons/io";
 import { PiClockClockwiseFill } from "react-icons/pi";
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
+import JobHome from "../JobHome/JobHome"; // Assuming JobHome is in a separate file
 
 const Home = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
+  const [selectedJob, setSelectedJob] = useState(null); // State to hold the selected job for JobHome
 
   // Sample Job Data
   const jobs = [
@@ -76,6 +78,7 @@ const Home = () => {
     { id: 59, title: "EV Charging Station Setup", company: "EV Solutions", date: "04 January 2025", status: "In Process", service: "Electric Services" },
     { id: 60, title: "Solar System Maintenance", company: "SolarTech", date: "09 January 2025", status: "Pending", service: "Solar Systems" }
   ];
+
 
   // Count jobs by service
   const countJobsByService = jobs.reduce((acc, job) => {
@@ -156,11 +159,11 @@ const Home = () => {
           key={i}
           className={`px-4 py-2 rounded border-2 border-transparent transition-colors duration-200 ${
             currentPage === i
-              ? 'border-blue-500 bg-blue-500 text-white' // Active: Blue background, white text
+              ? 'border-blue-500 bg-blue-500 text-white'
               : `hover:border-blue-500 ${
                   isDarkMode
-                    ? 'hover:bg-gray-800 bg-gray-900 text-gray-300' // Dark mode: Gray bg, light gray text
-                    : 'hover:bg-gray-200 bg-white text-gray-800' // Light mode: White bg, dark gray text
+                    ? 'hover:bg-gray-800 bg-gray-900 text-gray-300' 
+                    : 'hover:bg-gray-200 bg-white text-gray-800' 
                 }`
           }`}
           onClick={() => handlePageChange(i)}
@@ -177,6 +180,14 @@ const Home = () => {
     setSelectedService(null);
     setCurrentPage(1);
   };
+
+  const handleJobClick = (job) => {
+    setSelectedJob(job);
+  };
+
+  if (selectedJob) {
+    return <JobHome job={selectedJob} onGoBack={() => setSelectedJob(null)} />;
+  }
 
   return (
     <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} space-y-8 p-6 min-h-screen`}>
@@ -199,8 +210,8 @@ const Home = () => {
         {services.map((service, index) => (
           <div
             key={index}
-            className={`service-card ${selectedService === service.name ? 'bg-blue-500 border-blue-500' : isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'} 
-          ${isDarkMode ? 'text-white' : (selectedService === service.name ? 'text-white' : 'text-black')} rounded-lg p-4 shadow-md border-2 hover:border-blue-500 transition-all duration-300 flex items-center space-x-3`}
+            className={`service-card ${selectedService === service.name ? 'bg-blue-500 border-blue-500' : isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}
+              ${isDarkMode ? 'text-white' : (selectedService === service.name ? 'text-white' : 'text-black')} rounded-lg p-4 shadow-md border-2 hover:border-blue-500 transition-all duration-300 flex items-center space-x-3`}
             onClick={() => setSelectedService(service.name)}
           >
             <div className={`${selectedService === service.name ? 'text-gray-300' : isDarkMode ? 'text-blue-500' : 'text-blue-500'} transition-colors duration-300`}>
@@ -237,16 +248,16 @@ const Home = () => {
             <div
               key={index}
               className={`
-                status-card grid place-items-center 
+                status-card grid place-items-center
                 ${isDarkMode
                   ? (selectedStatus === status.status
                     ? ''
                     : 'bg-gray text-white hover:bg-gray-600 border-gray-500')
-                  : 'bg-white text-gray-800 hover:bg-gray-200'} 
-                p-6 rounded-lg shadow-lg transition-all duration-300 transform 
+                  : 'bg-white text-gray-800 hover:bg-gray-200'}
+                p-6 rounded-lg shadow-lg transition-all duration-300 transform
                 ${selectedStatus === status.status
                   ? 'border-blue-500'
-                  : 'border-gray-300'} 
+                  : 'border-gray-300'}
                 border-2 hover:border-blue-600 flex items-center space-x-3`}
               onClick={() => setSelectedStatus(status.status)}
             >
@@ -266,14 +277,18 @@ const Home = () => {
       {displayedJobs.length > 0 ? (
         <div className={`job-list space-y-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}>
           {displayedJobs.map(job => (
-            <div key={job.id} className={`job-card ${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-black hover:bg-gray-200'} p-5 rounded-md shadow-md flex items-center justify-between transition-all duration-300 cursor-pointer group`}>
+            <div
+              key={job.id}
+              className={`job-card ${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-black hover:bg-gray-200'} p-5 rounded-md shadow-md flex items-center justify-between transition-all duration-300 cursor-pointer group`}
+              onClick={() => handleJobClick(job)}
+            >
               <div className="flex flex-col">
                 <p className="text-lg font-semibold">{job.title}</p>
                 <span className="text-sm text-gray-400">{job.company}</span>
               </div>
               <div className="flex flex-wrap items-center gap-6">
                 <span className="text-gray-400 whitespace-nowrap">📅 {job.date}</span>
-                <span className={` 
+                <span className={`
                   ${job.status === 'Completed' ? ' text-white' :
                     job.status === 'In Process' ? ' text-white' :
                       job.status === 'Pending' ? ' text-white' :
@@ -289,36 +304,36 @@ const Home = () => {
             </div>
           ))}
           {filteredJobs.length > jobsPerPage && (
-  <div className={`flex items-left justify-center p-4 rounded-lg shadow-md mt-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-    <button
-      className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
-        currentPage === 1
-          ? 'cursor-not-allowed text-gray-400'
-          : `${isDarkMode ? 'bg-gray-700 hover:bg-blue-500 text-gray-300' : 'bg-gray-200 hover:bg-blue-500 text-gray-800'}`
-      }`}
-      onClick={() => handlePageChange(currentPage - 1)}
-      disabled={currentPage === 1}
-      aria-label="Previous Page"
-    >
-      Prev
-    </button>
-    <div className="flex space-x-2 mx-2">
-      {renderPageButtons()}
-    </div>
-    <button
-      className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
-        currentPage === totalPages
-          ? 'cursor-not-allowed text-gray-400'
-          : `${isDarkMode ? 'bg-gray-700 hover:bg-blue-500 text-gray-300' : 'bg-gray-200 hover:bg-blue-500 text-gray-800'}`
-      }`}
-      onClick={() => handlePageChange(currentPage + 1)}
-      disabled={currentPage === totalPages}
-      aria-label="Next Page"
-    >
-      Next
-    </button>
-        </div>
-)}
+            <div className={`flex items-left justify-center p-4 rounded-lg shadow-md mt-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+              <button
+                className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
+                  currentPage === 1
+                    ? 'cursor-not-allowed text-gray-400'
+                    : `${isDarkMode ? 'bg-gray-700 hover:bg-blue-500 text-gray-300' : 'bg-gray-200 hover:bg-blue-500 text-gray-800'}`
+                }`}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Previous Page"
+              >
+                Prev
+              </button>
+              <div className="flex space-x-2 mx-2">
+                {renderPageButtons()}
+              </div>
+              <button
+                className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
+                  currentPage === totalPages
+                    ? 'cursor-not-allowed text-gray-400'
+                    : `${isDarkMode ? 'bg-gray-700 hover:bg-blue-500 text-gray-300' : 'bg-gray-200 hover:bg-blue-500 text-gray-800'}`
+                }`}
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                aria-label="Next Page"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <p className="text-center text-gray-500">No jobs found</p>

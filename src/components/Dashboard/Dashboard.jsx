@@ -7,7 +7,11 @@ import AddItem from "../../pages/additem/additem";
 import Adduser from "../../pages/adduser/adduser";
 import Summary from "../../pages/summary/summary";
 import Settings from "../../pages/settings/settings";
+<<<<<<< HEAD
 import ProfileSettings from "../../pages/Profile/ProfileSettings";
+=======
+import RegisterPage from "../../pages/register/register";
+>>>>>>> 5b97b54debe7eea1a254683eb2bf0737f53e5fcd
 
 const Dashboard = () => {
   return (
@@ -29,7 +33,11 @@ const Dashboard = () => {
             <Route path="/additem" element={<AddItem />} />
             <Route path="/adduser" element={<Adduser />} />
             <Route path="/settings" element={<Settings />} />
+<<<<<<< HEAD
             <Route path="/ProfileSettings" element={<ProfileSettings />} />
+=======
+            <Route path="/register" element={<RegisterPage />} />
+>>>>>>> 5b97b54debe7eea1a254683eb2bf0737f53e5fcd
             {/* Add other routes here */}
           </Routes>
         </div>

@@ -1,54 +1,80 @@
-// LoginPage.jsx
-import React, { useState } from 'react';
-import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF, FaGithub } from 'react-icons/fa';
+// LoginPage.jsx (Assuming this is in your pages/login folder)
+import React, { useState, useContext } from 'react';
+import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF, FaGithub, FaMoon, FaSun } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { ThemeContext } from "../../components/ThemeContext/ThemeContext"; // Adjust the path if needed
 
 const LoginPage = () => {
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+
   const [formData, setFormData] = useState({
-    email: 'john@gmail.com',
+    email: '',
     password: '',
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    
-    // Basic validation
+
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       return;
     }
-    
-    // Would normally submit to backend here
+
     console.log('Login submitted:', formData);
-    setSuccess(true);
+
+    if (formData.email === '123@gmail.com' && formData.password === '789') {
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
+    } else {
+      setError('Invalid email or password');
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-        
+    <div
+      className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
+        isDarkMode ? 'dark' : ''
+      }`}
+    >
+      <div
+        className={`max-w-md w-full bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden ${
+          isDarkMode ? 'dark:bg-gray-800 dark:bg-opacity-90' : ''
+        }`}
+      >
         {/* Card Header */}
-        <div className="px-8 pt-8 pb-6">
+        <div className="px-8 pt-8 pb-6 relative">
           <h2 className="text-center text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
             Welcome back
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
             Sign in to your account
           </p>
+          {/* Dark Mode Toggle */}
+          <button
+            type="button"
+            className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-full p-2"
+            onClick={toggleTheme}
+          >
+            {isDarkMode ? <FaMoon className="h-5 w-5" /> : <FaSun className="h-5 w-5" />}
+          </button>
         </div>
-        
+
         {/* Card Body */}
         <div className="px-8 pb-8">
           {success ? (
@@ -60,11 +86,11 @@ const LoginPage = () => {
               {error}
             </div>
           ) : null}
-          
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                 Email address
               </label>
               <div className="mt-1">
@@ -76,31 +102,35 @@ const LoginPage = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    isDarkMode ? 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-500' : ''
+                  }`}
                   placeholder="example@domain.com"
                 />
               </div>
             </div>
-            
+
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                 Password
               </label>
               <div className="mt-1 relative">
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    isDarkMode ? 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-500' : ''
+                  }`}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
@@ -117,7 +147,7 @@ const LoginPage = () => {
                   type="checkbox"
                   className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-200">
                   Remember me
                 </label>
               </div>
@@ -128,7 +158,7 @@ const LoginPage = () => {
                 </a>
               </div>
             </div>
-            
+
             {/* Submit Button */}
             <div>
               <button
@@ -139,40 +169,6 @@ const LoginPage = () => {
               </button>
             </div>
           </form>
-          
-          {/* Register Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <a href="#" className="font-medium text-blue-500 hover:text-blue-600">
-                Register now
-              </a>
-            </p>
-          </div>
-          
-          {/* Social Logins */}
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-            
-            <div className="mt-6 flex justify-center space-x-6">
-              <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition">
-                <FaGoogle className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition">
-                <FaFacebookF className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition">
-                <FaGithub className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

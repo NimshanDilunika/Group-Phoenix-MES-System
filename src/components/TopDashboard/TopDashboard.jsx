@@ -1,10 +1,10 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { ThemeContext } from "../ThemeContext/ThemeContext";
 import { BsSearch } from "react-icons/bs";
+import { FaSun } from 'react-icons/fa';
 import { BiBell, BiUserCircle } from "react-icons/bi";
 import { MdDarkMode } from "react-icons/md";
 import { Link } from 'react-router-dom';
-import { FiUser } from "react-icons/fi";
 
 const TopDashboard = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
@@ -60,12 +60,17 @@ const TopDashboard = () => {
             />
           </div>
           <div>
-            <MdDarkMode
-              className={`text-2xl transition-all duration-300 cursor-pointer ${
-                isDarkMode ? "text-white" : "text-black"
-              }`}
-              onClick={toggleTheme}
-            />
+            {isDarkMode ? (
+              <FaSun
+                className={`text-2xl transition-all duration-300 cursor-pointer text-white`}
+                onClick={toggleTheme}
+              />
+              ) : (
+                <MdDarkMode
+                  className={`text-2xl transition-all duration-300 cursor-pointer text-black`}
+                  onClick={toggleTheme}
+                  />
+              )}
           </div>
           <div className="relative cursor-pointer group">
             <BiBell className={`text-2xl transition-all duration-300 ${isDarkMode ? "text-white" : "text-black"}`} />
@@ -90,7 +95,7 @@ const TopDashboard = () => {
                 <div className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                   Profile
                 </div>
-                <Link to="/ProfileSettings" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <Link to="/dashboard/ProfileSettings" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                   Settings
                 </Link>
                 <hr className={`${isDarkMode ? 'border-gray-700' : 'border-gray-300'} my-2`} />

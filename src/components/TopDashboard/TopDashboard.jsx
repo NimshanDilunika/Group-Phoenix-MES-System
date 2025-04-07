@@ -4,7 +4,6 @@ import { BsSearch } from "react-icons/bs";
 import { BiBell, BiUserCircle } from "react-icons/bi";
 import { MdDarkMode } from "react-icons/md";
 import { Link } from 'react-router-dom';
-import { FiUser } from "react-icons/fi";
 
 const TopDashboard = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
@@ -90,7 +89,7 @@ const TopDashboard = () => {
                 <div className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                   Profile
                 </div>
-                <Link to="/ProfileSettings" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <Link to="/dashboard/ProfileSettings" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                   Settings
                 </Link>
                 <hr className={`${isDarkMode ? 'border-gray-700' : 'border-gray-300'} my-2`} />

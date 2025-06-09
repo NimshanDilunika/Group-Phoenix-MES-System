@@ -61,9 +61,9 @@ const AddUser = () => {
   const placeholderColor = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-500';
 
   return (
-    <div className={`p-6 space-y-8 min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'}`}>
+    <div className={`p-6 space-y-8 min-h-screen ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
       {/* Header Section with Theme Toggle */}
-      <div className={`${isDarkMode ? 'bg-black border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
+      <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
         <div>
           <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Add New User</h1>
           <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Create a new system user</p>
@@ -79,7 +79,7 @@ const AddUser = () => {
       )}
 
       {/* Form Section */}
-      <div className={`${isDarkMode ? 'bg-black border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg`}>
+      <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg`}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Full Name */}

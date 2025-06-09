@@ -43,9 +43,9 @@ const ProfileSettings = () => {
 
   return (
     <div className={`min-h-screen p-6 transition-all ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}>
-    <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} rounded-xl p-6 shadow-xl mx-auto`}>
-      <h2 className="text-3xl font-semibold mb-6">Profile Settings</h2>
-      </div>
+    <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
+      <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Profile Settings</h1>
+    </div>
 
       {/* Success Message */}
       {saveSuccessMessage && (
@@ -56,7 +56,7 @@ const ProfileSettings = () => {
       )}
 
       {/* Profile Image Section */}
-      <div className={`shadow-md rounded-lg p-6 mt-6 flex items-center space-x-6 transition-all ${isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-gray-100 border-gray-300'}`}>
+      <div className={`shadow-md rounded-lg p-6 mt-6 flex items-center space-x-6  transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
         <div>
           {profileImage ? (
             <img src={profileImage} alt="Profile" className="w-24 h-24 rounded-full object-cover border border-gray-500" />
@@ -79,7 +79,7 @@ const ProfileSettings = () => {
       </div>
 
       {/* Account Settings Section */}
-      <div className={`shadow-md rounded-lg p-6 mt-6 transition-all ${isDarkMode ? 'bg-gray-800 border border-gray-600' : 'bg-gray-100 border border-gray-300'}`}>
+      <div className={`shadow-md rounded-lg p-6 mt-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
         <h3 className="text-xl font-semibold mb-4">Account</h3>
         <div className="mb-4">
           <label htmlFor="username" className="block text-sm dark:text-gray-400 font-bold mb-2 ">

@@ -27,7 +27,8 @@ const JobStatusPieChart = ({ jobs }) => {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6666"];
 
   return (
-    <div >
+    <div className="flex flex-col items-center p-6 shadow-lg rounded-2xl">
+      <h2 className="text-xl font-semibold mb-4">Job Status Summary</h2>
       <PieChart width={600} height={400}>
         <Pie
           data={data}

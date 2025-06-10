@@ -195,7 +195,7 @@ const Home = () => {
     <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} space-y-8 p-6 min-h-screen`}>
       {/*<JobStatusPieChart jobs={jobs}/>*/}
       {/* Header Section */}
-      <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} rounded-xl p-6 shadow-xl mx-auto`}>
+      <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-xl mx-auto`}>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-3xl font-semibold">Job Management</h1>

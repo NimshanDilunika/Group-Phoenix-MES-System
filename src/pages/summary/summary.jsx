@@ -50,14 +50,14 @@ const Summary = () => {
   
 
   return (
-    <div className={`p-8 min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+    <div className={`p-8 min-h-screen ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
       {/* ✅ Header Section */}
-      <div className={`flex justify-between items-center shadow-md p-6 rounded-lg mb-6 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
+      <div className={`flex justify-between items-center shadow-md p-6 rounded-lg mb-6 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
         <div>
-          <h2 className="text-3xl font-semibold">📊 Financial & Job Summary</h2>
+        <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>📊 Financial & Job Summary</h1>
           <p>{currentDate}</p>
         </div>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition" onClick={() => exportElementToPDF('report-content', 'summary-report.pdf')}>
+        <button className={`${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-500 text-white hover:bg-blue-400'} px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md`} onClick={() => exportElementToPDF('report-content', 'summary-report.pdf')}>
           Export Report
         </button>
       </div>
@@ -87,7 +87,7 @@ const Summary = () => {
 
 
       {/* ✅ Charts (Toggle Based on Tab) */}
-      <div className={`shadow-lg rounded-lg p-6 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
+      <div className={`shadow-lg rounded-lg p-6 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
         {activeTab === "daily" && (
           <div id="report-content">
             <h3 className="text-lg font-medium mb-4">💰 Daily Income</h3>

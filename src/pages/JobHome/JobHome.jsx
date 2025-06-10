@@ -75,32 +75,47 @@ const JobHome = ({ job, onGoBack }) => {
         {/* Document Buttons */}
         <div className="w-full">
           <div className="flex justify-between mb-6 w-full">
-            <button
-              onClick={() => setSelectedComponent("JobCard")}
-              className={`w-1/4 py-3 px-8 rounded-lg shadow-md transition text-lg font-semibold ${
-                selectedComponent === "JobCard" ? "bg-blue-600" : `${isDarkMode ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-500 hover:bg-blue-400"}`
-              } ${isDarkMode ? 'text-white' : 'text-white'}`}
-            >
-              Job Card
-            </button>
+          <button
+            onClick={() => setSelectedComponent("JobCard")}
+            className={`w-1/4 py-3 px-8 rounded-lg shadow-md transition text-lg font-semibold
+              ${selectedComponent === "JobCard"
+                ? "bg-blue-600 text-white border-gray-600" // Selected: Solid background, no border effect
+                : isDarkMode
+                  ? "bg-transparent text-white border border-gray-700 hover:bg-gray-800 hover:text-white" // Dark mode: Transparent bg, blue border, hover changes bg and text
+                  : "bg-transparent text-black border border-gray-300 hover:bg-gray-200 " // Light mode: Transparent bg, blue border, hover changes bg and text
+              }`
+            }
+          >
+            Job Card
+          </button>
 
-            <button
-              onClick={() => setSelectedComponent("Quotation")}
-              className={`w-1/4 py-3 px-8 rounded-lg shadow-md transition text-lg font-semibold ${
-                selectedComponent === "Quotation" ? "bg-blue-600" : `${isDarkMode ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-500 hover:bg-blue-400"}`
-              } ${isDarkMode ? 'text-white' : 'text-white'}`}
-            >
-              Quotation
-            </button>
+          <button
+            onClick={() => setSelectedComponent("Quotation")}
+            className={`w-1/4 py-3 px-8 rounded-lg shadow-md transition text-lg font-semibold
+              ${selectedComponent === "Quotation"
+                ? "bg-blue-600 text-white border-gray-600" // Selected: Solid background, no border effect
+                : isDarkMode
+                  ? "bg-transparent text-white border border-gray-700 hover:bg-gray-800 hover:text-white" // Dark mode: Transparent bg, blue border, hover changes bg and text
+                  : "bg-transparent text-black border border-gray-300 hover:bg-gray-200 " // Light mode: Transparent bg, blue border, hover changes bg and text
+              }`
+            }
+          >
+            Quotation
+          </button>
 
-            <button
-              onClick={() => setSelectedComponent("Invoice")}
-              className={`w-1/4 py-3 px-8 rounded-lg shadow-md transition text-lg font-semibold ${
-                selectedComponent === "Invoice" ? "bg-blue-600" : `${isDarkMode ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-500 hover:bg-blue-400"}`
-              } ${isDarkMode ? 'text-white' : 'text-white'}`}
-            >
-              Invoice
-            </button>
+          <button
+            onClick={() => setSelectedComponent("Invoice")}
+            className={`w-1/4 py-3 px-8 rounded-lg shadow-md transition text-lg font-semibold
+              ${selectedComponent === "Invoice"
+                ? "bg-blue-600 text-white border-gray-600" // Selected: Solid background, no border effect
+                : isDarkMode
+                  ? "bg-transparent text-white border border-gray-700 hover:bg-gray-800 hover:text-white" // Dark mode: Transparent bg, blue border, hover changes bg and text
+                  : "bg-transparent text-black border border-gray-300 hover:bg-gray-200 " // Light mode: Transparent bg, blue border, hover changes bg and text
+              }`
+            }
+          >
+            Invoice
+          </button>
           </div>
         </div>
         <div className="mt-6">

@@ -18,7 +18,7 @@ const data = [
 
 const IncomeBarChart = () => {
   return (
-    <div className="p-6 bg-white shadow-lg rounded-2xl w-full max-w-2xl">
+    <div className="flex flex-col items-center  p-6 shadow-lg rounded-2xl w-full max-w-2xl">
       <h2 className="text-xl font-semibold text-center mb-4">Monthly Income Summary</h2>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 10 }}>

@@ -1,14 +1,15 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
-import { FiBarChart2, FiBox } from "react-icons/fi";
+import { FiBarChart2, FiBox, FiUser } from "react-icons/fi"; // Import FiUser
 import { LuUsers } from "react-icons/lu";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { ThemeContext } from "../ThemeContext/ThemeContext"; // Import the ThemeContext
-import Logo from "../../image/a.png";
+import { ThemeContext } from "../ThemeContext/ThemeContext"; // Import ThemeContext
+import { CompanySettingsContext } from "../../context/CompanySettingsContext"; // Import CompanySettingsContext
 
 const LeftDashboard = () => {
-  const { isDarkMode, toggleTheme } = useContext(ThemeContext); // Access the context
+  const { isDarkMode } = useContext(ThemeContext); // Access the theme context
+  const { companyLogoUrl, isLoadingSettings } = useContext(CompanySettingsContext); // Access the company settings context
   const [isMinimized, setIsMinimized] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,12 +30,16 @@ const LeftDashboard = () => {
       } ${isMinimized ? "w-35" : "w-60"}`}
     >
       <div className={`flex ${isMinimized ? "justify-center" : "justify-between"} items-center mb-6`}>
-        <span></span><span></span><span></span><span></span>
+      {/* Conditional rendering for the company logo */}
+      {companyLogoUrl && !isLoadingSettings ? (
         <img
-          src={Logo}
-          alt="Logo"
-          className={`object-cover rounded-full transition-all duration-300 ${isMinimized ? "w-12 h-12" : "w-20 h-20"}`}
+          src={companyLogoUrl}
+          alt="Company Logo"
+          className={`transition-all duration-300 rounded-full object-cover border border-gray-400 ${isMinimized ? "w-12 h-12" : "w-20 h-20"}`}
         />
+      ) : (
+        <FiUser className={`transition-all duration-300 ${isMinimized ? "w-12 h-12" : "w-20 h-20"} text-gray-400 rounded-full`} />
+      )}
 
         <div
           className={`ml-5 cursor-pointer p-2 rounded-full transition-all duration-300 flex items-center justify-center
@@ -67,6 +72,7 @@ const LeftDashboard = () => {
             { icon: <FiBarChart2 className="text-xl" />, name: "Summary", path: "/dashboard/summary" },
             { icon: <FiBox className="text-xl" />, name: "Add Item", path: "/dashboard/additem" },
             { icon: <LuUsers className="text-xl" />, name: "Add User", path: "/dashboard/adduser" },
+            { icon: <FiUser className="text-xl" />, name: "Add Customer", path: "/dashboard/addcustomer" },
             { icon: <AiOutlineSetting className="text-xl" />, name: "Settings", path: "/dashboard/settings" }
           ].map((item, index) => (
             <li

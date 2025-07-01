@@ -3,19 +3,21 @@ import React, { useState, useContext } from 'react';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF, FaGithub, FaMoon, FaSun } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext"; // Adjust the path if needed
+import axios from 'axios'; // Import axios
 
 const LoginPage = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
-
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+
+  // Define your Laravel API base URL
+  const API_BASE_URL = 'http://127.0.0.1:8000/api'; // Or whatever your Laravel backend URL is
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,24 +27,66 @@ const LoginPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => { // Make function async
     e.preventDefault();
     setError('');
+    setSuccess(false); // Reset success state
 
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       return;
     }
 
-    console.log('Login submitted:', formData);
+    try {
+      // Make a POST request to your Laravel login endpoint
+      const response = await axios.post(`${API_BASE_URL}/login`, {
+        email: formData.email,
+        password: formData.password,
+      });
 
-    if (formData.email === '123@gmail.com' && formData.password === '789') {
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
-    } else {
-      setError('Invalid email or password');
+      // If login is successful
+      if (response.status === 200) {
+        setSuccess(true);
+        setError(''); // Clear any previous errors
+
+        const { access_token, user } = response.data;
+
+        // --- FIXED: Store the token using the key 'authToken' ---
+        localStorage.setItem('authToken', access_token);
+        localStorage.setItem('user', JSON.stringify(user));
+        // Optionally store user data
+        //localStorage.setItem('user_data', JSON.stringify(user));
+
+        console.log('Login successful:', response.data);
+
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (err.response.status === 422) { // Laravel validation error (e.g., incorrect credentials)
+          if (err.response.data.errors && err.response.data.errors.email) {
+            setError(err.response.data.errors.email[0]); // Display Laravel's specific error message
+          } else {
+            setError('Invalid email or password. Please try again.');
+          }
+        } else if (err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError('An unexpected error occurred during login.');
+        }
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check your network connection or API URL.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError('Error: ' + err.message);
+      }
     }
   };
 
@@ -74,19 +118,17 @@ const LoginPage = () => {
             {isDarkMode ? <FaMoon className="h-5 w-5" /> : <FaSun className="h-5 w-5" />}
           </button>
         </div>
-
         {/* Card Body */}
         <div className="px-8 pb-8">
           {success ? (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
-              Login successful!
+              Login successful! Redirecting...
             </div>
           ) : error ? (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
               {error}
             </div>
           ) : null}
-
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email */}
             <div>
@@ -109,7 +151,6 @@ const LoginPage = () => {
                 />
               </div>
             </div>
-
             {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -137,7 +178,6 @@ const LoginPage = () => {
                 </button>
               </div>
             </div>
-
             {/* Remember me & Forgot password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -151,14 +191,12 @@ const LoginPage = () => {
                   Remember me
                 </label>
               </div>
-
               <div className="text-sm">
                 <a href="#" className="font-medium text-blue-500 hover:text-blue-600">
                   Forgot password?
                 </a>
               </div>
             </div>
-
             {/* Submit Button */}
             <div>
               <button

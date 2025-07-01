@@ -9,6 +9,7 @@ const Quotation = () => {
   const [selectedDate, setSelectedDate] = useState("2025-06-10");
   const [items, setItems] = useState([{ materialsNo: "", description: "", unitPrice: "", quantity: "", unitTotalPrice: "" }]);
   const [vatValue, setVatValue] = useState(18);
+  const [discountValue, setDiscountValue] = useState(10);
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...items];
@@ -33,6 +34,9 @@ const Quotation = () => {
   const handleVatChange = (e) => {
     setVatValue(e.target.value);
   };
+   const handleDiscountChange = (e) => {
+    setDiscountValue(e.target.value);
+  };
 
   const calculateUnitTotal = (index) => {
     const newItems = [...items];
@@ -51,48 +55,32 @@ const Quotation = () => {
     const totalWithoutTax = calculateTotalWithoutTax();
     return (parseFloat(totalWithoutTax) * (vatValue / 100)).toFixed(2);
   };
-
   const calculateTotalWithTax = () => {
     const totalWithoutTax = calculateTotalWithoutTax();
     const vat = calculateVAT();
     return (parseFloat(totalWithoutTax) + parseFloat(vat)).toFixed(2);
   };
 
-  const [CustomerOk, setCustomerOk] = useState(false);
-  const [SpecialApprove, setSpecialApprove] = useState(false);
+  const calculateDiscount = () => {
+    const totalWithTax = calculateTotalWithTax();
+    return (parseFloat(totalWithTax) * (discountValue / 100)).toFixed(2);
+  };
+  const calculateTotalWithTaxAndDiscount = () => {
+    const totalWithTax = calculateTotalWithTax();
+    const discount = calculateDiscount();
+    return (parseFloat(totalWithTax) - parseFloat(discount)).toFixed(2);
+  };
+  
+
+
+
+  
 
   return (
     // Apply theme-dependent background, text, and border colors to the main container
     <div className={`max-w-4xl mx-auto p-6 rounded-2xl shadow-xl mt-6 border ${isDarkMode ? 'bg-gray-800 text-gray-100 border-gray-700' : 'bg-white text-gray-900 border-gray-200'}`}>
       <h1 className="text-center text-xl font-bold mb-6 tracking-wide uppercase">Quotation</h1>
       <div className="flex justify-end space-x-4 mb-4">
-        {/* Customer Ok Toggle */}
-        <div className="flex items-center space-x-2">
-          <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>Customer Ok</p>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={CustomerOk}
-              onChange={() => setCustomerOk(!CustomerOk)}
-            />
-            <div className={`w-14 h-7 peer-focus:outline-none peer-focus:ring-4 rounded-full peer after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${isDarkMode ? 'bg-gray-700 peer-focus:ring-green-800 after:border-gray-600 peer-checked:bg-green-600' : 'bg-gray-300 peer-focus:ring-green-300 after:border-gray-300 peer-checked:bg-green-500'} peer-checked:after:translate-x-7 peer-checked:after:border-white`}></div>
-          </label>
-        </div>
-        {/* Special Approve Toggle */}
-        <div className="flex items-center space-x-2">
-          <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>Special Approve</p>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={SpecialApprove}
-              onChange={() => setSpecialApprove(!SpecialApprove)}
-            />
-            <div className={`w-14 h-7 peer-focus:outline-none peer-focus:ring-4 rounded-full peer after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${isDarkMode ? 'bg-gray-700 peer-focus:ring-red-800 after:border-gray-600 peer-checked:bg-red-600' : 'bg-gray-300 peer-focus:ring-red-300 after:border-gray-300 peer-checked:bg-red-500'} peer-checked:after:translate-x-7 peer-checked:after:border-white`}></div>
-          </label>
-        </div>
-
         <button className={`px-6 py-2 rounded-lg shadow-md transition flex items-center ${isDarkMode ? 'bg-blue-600 hover:bg-blue-800 text-white' : 'bg-blue-600 hover:bg-blue-800 text-white'}`}>
           <FaDownload className="mr-2" /> Download
         </button>
@@ -303,7 +291,7 @@ const Quotation = () => {
                 />
               </td>
             </tr>
-            <tr className={`${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>
+             <tr className={`${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>
               <td className="p-2 border">
                 <input
                   type="text"
@@ -316,6 +304,77 @@ const Quotation = () => {
                 <input
                   type="text"
                   value={calculateTotalWithTax()}
+                  readOnly
+                  // Styling for read-only input
+                  className={`w-full px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+                />
+              </td>
+            </tr>
+
+
+
+
+
+
+             <tr className={`${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>
+              <td className="p-2 border">
+                {/* Nested table for VAT input - ensuring it respects dark mode */}
+                <table className="w-full">
+                  <tbody>
+                    <tr>
+                      <td className="p-0 border-none"> {/* Remove padding and border for inner table cell */}
+                        <input
+                          type="text"
+                          value="Discount"
+                          readOnly
+                          className={`w-full px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+                        />
+                      </td>
+                      <td className="p-0 border-none"> {/* Remove padding and border for inner table cell */}
+                        <input
+                          type="number"
+                          min="0"
+                          value={discountValue}
+                          onChange={handleDiscountChange} // Handle VAT change
+                          className={`w-full px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td className="p-2 border">
+                <input
+                  type="text"
+                  value={calculateDiscount()}
+                  readOnly
+                  // Styling for read-only input
+                  className={`w-full px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+                />
+              </td>
+            </tr>
+
+
+
+
+
+
+
+
+
+            <tr className={`${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>
+              <td className="p-2 border">
+                <input
+                  type="text"
+                  value="Total ( With TAX & Discount)"
+                  readOnly
+                  className={`w-full px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+                />
+              </td>
+              <td className="p-2 border">
+                <input
+                  type="text"
+                  value={calculateTotalWithTaxAndDiscount()}
                   readOnly
                   // Styling for read-only input
                   className={`w-full px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}

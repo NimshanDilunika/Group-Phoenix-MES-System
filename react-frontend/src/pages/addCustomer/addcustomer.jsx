@@ -60,11 +60,11 @@ const CustomerCard = ({ customer, isDarkMode, handleEdit, handleDeleteClick }) =
                 <div className="flex items-start space-x-2">
                   <Building2 size={16} className={`${iconColor} mt-0.5`} />
                   <p className={`text-sm ${subTextColor}`}>
-                    <strong>{area.area_name || ''}:</strong>
+                    <strong>{area.areaName || ''}:</strong>
                     <ul className="list-disc list-inside ml-4 mt-1 space-y-0.5">
                       {area.branches && area.branches.length > 0 ? (
                         area.branches.map((branch, bIdx) => (
-                          <li key={bIdx}>{branch.branch_name || ''} {branch.branch_phoneno ? `(${branch.branch_phoneno})` : ''}</li>
+                          <li key={bIdx}>{branch.branchName || ''} {branch.branchPhone ? `(${branch.branchPhone})` : ''}</li>
                         ))
                       ) : (
                         <li>No branches defined</li>
@@ -240,7 +240,19 @@ const AddCustomer = () => {
         ...customer,
         customer_id: customer.id || customer.customer_id, // Use 'id' from backend if available, fallback to 'customer_id'
         createdAt: customer.createdAt || new Date().toISOString(), // Add a mock createdAt if not from backend
-        areas: customer.areas || [], // Ensure areas is always an array
+        areas: customer.areas
+          ? customer.areas.map(area => ({
+              ...area,
+              areaName: area.areaName || area.area_name || "",
+              branches: area.branches
+                ? area.branches.map(branch => ({
+                    ...branch,
+                    branchName: branch.branchName || branch.branch_name || "",
+                    branchPhone: branch.branchPhone || branch.branch_phoneno || "",
+                  }))
+                : [],
+            }))
+          : [], // Ensure areas is always an array
       }));
       setCustomers(processedData);
       setFilteredCustomers(processedData); // Initialize filtered list with actual data
@@ -389,22 +401,25 @@ const AddCustomer = () => {
 
     // Populate the areas and branches form fields
     // Ensure that if a customer has no areas/branches, we start with a default empty one.
-    if (customer.areas && customer.areas.length > 0) {
-      const formattedAreas = customer.areas.map(area => ({
-        areaName: area.area_name || "",
-        branches: area.branches && area.branches.length > 0
-          ? area.branches.map(branch => ({
-              branchName: branch.branch_name || "",
-              branchPhone: branch.branch_phoneno || "",
-            }))
-          : [{ branchName: "", branchPhone: "" }], // Ensure at least one empty branch
-      }));
-      console.log("Formatted areas for editing:", formattedAreas);
-      setAreas(formattedAreas);
-    } else {
-      // If no areas, reset to default empty area/branch
-      setAreas([{ areaName: "", branches: [{ branchName: "", branchPhone: "" }] }]);
-    }
+      if (customer.areas && customer.areas.length > 0) {
+        const formattedAreas = customer.areas.map(area => ({
+          areaName: area.areaName || "",
+          branches: area.branches && area.branches.length > 0
+            ? area.branches.map(branch => ({
+                branchName: branch.branchName || "",
+                branchPhone: branch.branchPhone || "",
+              }))
+            : [{ branchName: "", branchPhone: "" }], // Ensure at least one empty branch
+        }));
+        console.log("Formatted areas for editing:", formattedAreas);
+        formattedAreas.forEach(area => {
+          console.log("Branches for area:", area.areaName, area.branches);
+        });
+        setAreas(formattedAreas);
+      } else {
+        // If no areas, reset to default empty area/branch
+        setAreas([{ areaName: "", branches: [{ branchName: "", branchPhone: "" }] }]);
+      }
 
     // Clear any previous messages
     setSuccessMessage("");
@@ -603,14 +618,39 @@ const AddCustomer = () => {
               {areas.map((area, areaIndex) => (
                 <div key={areaIndex} className={`mb-4 p-4 border rounded-lg ${isDarkMode ? "border-gray-600 bg-gray-800" : "border-gray-300 bg-gray-100"}`}>
                   <label className={`block mb-1 font-semibold ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>Area Name</label>
-                  <input
-                    type="text"
+                  <select
                     value={area.areaName}
                     onChange={(e) => handleAreaChange(areaIndex, e.target.value)}
-                    placeholder="e.g., Colombo, Kandy"
                     required
                     className={`w-full border rounded px-3 py-2 mb-3 ${isDarkMode ? "border-gray-600 bg-gray-700 text-white" : "border-gray-300 bg-white text-gray-900"}`}
-                  />
+                  >
+                    <option value="" disabled>Select District</option>
+                    <option value="Ampara">Ampara</option>
+                    <option value="Anuradhapura">Anuradhapura</option>
+                    <option value="Badulla">Badulla</option>
+                    <option value="Batticaloa">Batticaloa</option>
+                    <option value="Colombo">Colombo</option>
+                    <option value="Galle">Galle</option>
+                    <option value="Gampaha">Gampaha</option>
+                    <option value="Hambantota">Hambantota</option>
+                    <option value="Jaffna">Jaffna</option>
+                    <option value="Kalutara">Kalutara</option>
+                    <option value="Kandy">Kandy</option>
+                    <option value="Kegalle">Kegalle</option>
+                    <option value="Kilinochchi">Kilinochchi</option>
+                    <option value="Kurunegala">Kurunegala</option>
+                    <option value="Mannar">Mannar</option>
+                    <option value="Matale">Matale</option>
+                    <option value="Matara">Matara</option>
+                    <option value="Monaragala">Monaragala</option>
+                    <option value="Mullaitivu">Mullaitivu</option>
+                    <option value="Nuwara Eliya">Nuwara Eliya</option>
+                    <option value="Polonnaruwa">Polonnaruwa</option>
+                    <option value="Puttalam">Puttalam</option>
+                    <option value="Ratnapura">Ratnapura</option>
+                    <option value="Trincomalee">Trincomalee</option>
+                    <option value="Vavuniya">Vavuniya</option>
+                  </select>
 
                   <h4 className={`font-semibold mb-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>Branches for {area.areaName || "this area"}</h4>
                   {area.branches.map((branch, branchIndex) => (

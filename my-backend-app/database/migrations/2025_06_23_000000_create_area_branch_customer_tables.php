@@ -8,87 +8,57 @@ class CreateAreaBranchCustomerTables extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        // 1. Create branches table
-        Schema::create('branches', function (Blueprint $table) {
-            $table->increments('branch_id');
-            $table->string('branch_name', 100);
-            $table->string('branch_phoneno', 100)->nullable();
-            $table->timestamps();
-        });
-
-        // 2. Create areas table
+        // 1. Create areas table
         Schema::create('areas', function (Blueprint $table) {
-            $table->increments('area_id');
-            $table->string('area_name', 100);
+            $table->id(); // same as AUTO_INCREMENT PRIMARY KEY
+            $table->string('name', 100)->unique();
             $table->timestamps();
         });
 
-        // 3. Create customers table
+        // 2. Create customers table
         Schema::create('customers', function (Blueprint $table) {
-            $table->increments('customer_id');
+            $table->id();
             $table->string('customer_name', 100);
-            $table->string('email', 100)->nullable();
+            $table->string('email', 100)->unique()->nullable();
             $table->string('phone', 20)->nullable();
-            $table->string('address', 50)->nullable();
+            $table->string('address', 255)->nullable();
             $table->timestamps();
         });
 
-        // 4. Pivot: area_branch (area_id + branch_id)
-        Schema::create('area_branch', function (Blueprint $table) {
-            $table->unsignedInteger('area_id');
-            $table->unsignedInteger('branch_id');
+        // 3. Create customer_area table
+        Schema::create('customer_area', function (Blueprint $table) {
+            $table->id('customer_area_id');
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('area_id');
+            $table->timestamps();
 
-            // Foreign keys
-            $table->foreign('area_id')
-                ->references('area_id')->on('areas')
-                ->onDelete('cascade');
-
-            $table->foreign('branch_id')
-                ->references('branch_id')->on('branches')
-                ->onDelete('cascade');
-
-            // Composite primary key
-            $table->primary(['area_id', 'branch_id']);
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('area_id')->references('id')->on('areas')->onDelete('cascade');
         });
 
-        // 5. Pivot: customer_area (customer_id + area_id)
-        Schema::create('customer_area', function (Blueprint $table) {
-            $table->unsignedInteger('customer_id');
-            $table->unsignedInteger('area_id');
+        // 4. Create branches table
+        Schema::create('branches', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+            $table->string('phone_no', 20)->nullable();
+            $table->unsignedBigInteger('customer_area_id');
+            $table->timestamps();
 
-            // Foreign keys
-            $table->foreign('customer_id')
-                ->references('customer_id')->on('customers')
-                ->onDelete('cascade');
-
-            $table->foreign('area_id')
-                ->references('area_id')->on('areas')
-                ->onDelete('cascade');
-
-            // Composite primary key
-            $table->primary(['customer_id', 'area_id']);
+            $table->foreign('customer_area_id')->references('customer_area_id')->on('customer_area')->onDelete('cascade');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        // Drop pivot tables first to avoid constraint conflicts
+        Schema::dropIfExists('branches');
         Schema::dropIfExists('customer_area');
-        Schema::dropIfExists('area_branch');
-
-        // Drop main tables
         Schema::dropIfExists('customers');
         Schema::dropIfExists('areas');
-        Schema::dropIfExists('branches');
     }
 }

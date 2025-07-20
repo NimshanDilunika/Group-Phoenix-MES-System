@@ -2,40 +2,39 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { FiFilter, FiWind } from "react-icons/fi";
 import { FaRegClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { BsBatteryCharging, BsBrightnessHigh } from "react-icons/bs";
 import { FaRegFlag } from "react-icons/fa6";
 import { LuListTodo } from "react-icons/lu";
 import { IoIosAddCircle } from "react-icons/io";
 import { PiClockClockwiseFill } from "react-icons/pi";
 import { MdArrowDropDown } from "react-icons/md"; // Import an arrow icon for the dropdown
-
+import { AirVent, SunDim, MonitorCog, Waves , Wrench,Hammer, Cable, Volume2 , Bug, Phone, Cog, BatteryCharging, Wind, Unplug} from "lucide-react";
 // Import icons from react-icons based on your database values (e.g., FaFaucet, GiMechanicGarage)
 import { FaFaucet } from "react-icons/fa";
-import { MdOutlineElectricalServices } from "react-icons/md";
 import { GiMechanicGarage } from "react-icons/gi";
 import { Tag } from "lucide-react"; // Assuming 'Tag' is a fallback from Lucide
-
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import JobHome from "../JobHome/JobHome";
 import '../../components/SummaryDashboard/JobStatusPieChart'; // Ensure this path is correct
 
 const DynamicIcons = {
-    FiWind: FiWind,
-    FaRegClock: FaRegClock,
-    FaCheckCircle: FaCheckCircle,
-    FaTimesCircle: FaTimesCircle,
-    BsBatteryCharging: BsBatteryCharging,
-    BsBrightnessHigh: BsBrightnessHigh,
-    FaRegFlag: FaRegFlag,
-    LuListTodo: LuListTodo,
-    IoIosAddCircle: IoIosAddCircle,
-    PiClockClockwiseFill: PiClockClockwiseFill,
     FaFaucet: FaFaucet,
-    MdOutlineElectricalServices: MdOutlineElectricalServices,
+    Unplug :Unplug,
     GiMechanicGarage: GiMechanicGarage,
+    BatteryCharging: BatteryCharging,
+    AirVent: AirVent,
+    SunDim: SunDim,
+    MonitorCog: MonitorCog,
+    Wind : Wind,
+    Cable: Cable,
+    Bug : Bug,
+    Cog: Cog,
+    Phone: Phone,
+    Volume2: Volume2,
+    Wrench: Wrench,
+    Waves: Waves,
+    Hammer: Hammer,
     Tag: Tag,
 };
-
 // Map status strings to their respective icons
 const StatusIcons = {
     Pending: PiClockClockwiseFill,

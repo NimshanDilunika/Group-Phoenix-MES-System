@@ -59,7 +59,7 @@ const CustomerCard = ({ customer, isDarkMode, handleEdit, handleDeleteClick }) =
               <li key={idx}>
                 <div className="flex items-start space-x-2">
                   <Building2 size={16} className={`${iconColor} mt-0.5`} />
-                  <p className={`text-sm ${subTextColor}`}>
+                  <div className={`text-sm ${subTextColor}`}>
                     <strong>{area.areaName || ''}:</strong>
                     <ul className="list-disc list-inside ml-4 mt-1 space-y-0.5">
                       {area.branches && area.branches.length > 0 ? (
@@ -70,7 +70,7 @@ const CustomerCard = ({ customer, isDarkMode, handleEdit, handleDeleteClick }) =
                         <li>No branches defined</li>
                       )}
                     </ul>
-                  </p>
+                  </div>
                 </div>
               </li>
             ))}
@@ -370,7 +370,19 @@ const AddCustomer = () => {
       }
 
       setSuccessMessage(editingCustomerId ? "Customer updated successfully!" : "Customer added successfully!");
-      window.location.reload(); // Full page refresh after submission
+      // Refresh customers list before page refresh
+      await fetchCustomers();
+      if (!editingCustomerId) {
+        // For new customer, show success message and refresh after delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        // For update, refresh page to show updated details
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
     } catch (error) {
       console.error("Submission error:", error);
       setErrorMessage(error.message);

@@ -7,6 +7,7 @@ const Quotation = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
 
   const [selectedDate, setSelectedDate] = useState("2025-06-10");
+  const [TenderSingedate, setTenderSingedDate] = useState("2025-06-10");
   const [items, setItems] = useState([{ materialsNo: "", description: "", unitPrice: "", quantity: "", unitTotalPrice: "" }]);
   const [vatValue, setVatValue] = useState(18);
   const [discountValue, setDiscountValue] = useState(10);
@@ -114,47 +115,83 @@ const Quotation = () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 mb-6">
+      
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="flex items-center space-x-2">
-          <label className="font-medium">Region: </label>
+          <label className="font-medium">Region : </label>
           {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
           <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
         </div>
+        <div className="flex items-center space-x-2">
+          <label className="font-medium">Ref Qtn:</label>
+          {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
+          <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
+        </div>
+
         <div className="flex items-center space-x-2">
           <label className="font-medium">Site : </label>
           {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
           <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
         </div>
-        <br />
         <div className="flex items-center space-x-2">
-          <label className="font-medium">FAM No : </label>
+          <label className="font-medium">Job Date: </label>
           {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
           <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
         </div>
         <div className="flex items-center space-x-2">
-          <label className="font-medium">Complain Nature: </label>
+          <label className="font-medium">FAM NO: </label>
           {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
           <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
         </div>
+        <div><br /></div>
+        <div><br /></div>
+      <div className="grid grid-cols-2 gap-4 mb-6"></div>
+        <div className="flex items-center space-x-2">
+          <label className="font-medium">Complain Nature :</label>
+          {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
+          <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
+        </div>
+        <div className="flex items-center space-x-2">
+          <label className="font-medium">PO NO: </label>
+          {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
+          <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
+        </div>
+      
         <div className="flex items-center space-x-2">
           <label className="font-medium">Actual Break Down : </label>
           {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
           <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
         </div>
-        <br />
+        <div className="flex items-center space-x-2">
+          <label className="font-medium">PO Date : </label>
+          {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
+          <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
+        </div>
+      </div>
+      <br></br>
+
+
+      < div>  
         <label className="font-medium">Service and Maintenance of Post Warranty Generators</label>
         <div className="flex items-center space-x-2">
           <label className="font-medium">Tender No : </label>
           {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
           <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
         </div>
+        <br></br>
         <div className="flex items-center space-x-2">
-          <label className="font-medium">Signed Date: </label>
-          {/* Corrected Tailwind width class from w/2-full to w-4/5 for better compatibility */}
-          <input type="text" className={`w-4/5 border rounded-lg px-3 py-1 mt-1 focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`} />
-        </div>
+            <label className="font-semibold">Singed date:</label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setTenderSingedDate(e.target.value)}
+              className={`px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-200 text-gray-900 border-gray-300'}`}
+            />
+            <FaCalendarAlt className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+          </div>
       </div>
-
+      <br></br>
+      <br></br>
       <div className="mb-6">
         <label className="font-medium">Items/Materials Replaced:</label>
         <table className={`w-full border mt-2 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>

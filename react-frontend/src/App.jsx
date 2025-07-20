@@ -7,6 +7,7 @@ import LogoutPage from './components/Logout/logout';
 import UserList from './components/UserList/UserList'; // import the new component
 import ProfileSettings from './pages/Profile/ProfileSettings'; // import ProfileSettings
 import { CompanySettingsProvider } from "./context/CompanySettingsContext";
+import ItimPage from './pages/itim/ItimPage.jsx';
 
 // PrivateRoute component to guard routes requiring authentication
 const PrivateRoute = ({ children }) => {
@@ -33,6 +34,7 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route path="/itim" element={<ItimPage />} />
           </Routes>
         </Router>
       </CompanySettingsProvider>

@@ -9,6 +9,9 @@ use App\Http\Controllers\ProfileController; // Add this lin
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\Api\AreaController;
+use App\Http\Controllers\Api\JobCardController;
+use App\Http\Controllers\Api\JobHomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,10 +89,19 @@ Route::post('/company-settings', [CompanySettingsController::class, 'update']);
 Route::get('/company-settings/logo/{id}', [CompanySettingsController::class, 'logo'])->name('company.logo');
 Route::get('/profile/image/{id}', [ProfileController::class, 'profileImage'])->name('user.profile.image');
 
-use App\Http\Controllers\Api\AreaController;
+
 
 Route::get('/areas', [CustomerController::class, 'areas']);
 Route::apiResource('customers', CustomerController::class);
 
 
 Route::apiResource('areas', AreaController::class);
+
+Route::post('/jobcards', [JobCardController::class, 'store']);
+Route::put('/jobcards/{id}', [JobCardController::class, 'update']);
+Route::get('/jobcards/{id}', [JobCardController::class, 'show']);
+
+
+Route::get('/job-homes', [JobHomeController::class, 'index']);
+Route::post('/job-homes', [JobHomeController::class, 'store']);
+Route::put('/job-homes/{id}', [JobHomeController::class, 'update']);

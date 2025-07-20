@@ -499,7 +499,7 @@ const AddItem = () => {
                   isDarkMode ? "text-gray-500" : "text-gray-700"
                 }`}
               >
-                Enter the name of a{" "}
+                {/* Enter the name of a{" "}
                 <a
                   href="https://lucide.dev/icons"
                   target="_blank"
@@ -508,7 +508,8 @@ const AddItem = () => {
                 >
                   Lucide icon
                 </a>
-                .
+                . */}
+                <b>You can add these Icon Names :</b><br></br>FaFaucet , Unplug , Hammer , GiMechanicGarage , BatteryCharging , AirVent , SunDim , MonitorCog , Wind , Cable , Bug , Cog , Phone , Volume2 , Wrench , Waves , Tag
               </p>
             </div>
           </div>

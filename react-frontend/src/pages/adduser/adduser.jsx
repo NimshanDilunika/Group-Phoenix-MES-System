@@ -78,9 +78,10 @@ const UserCard = ({ user, isDarkMode, initiateRoleChange, initiateDeleteUser }) 
                       onChange={(e) => initiateRoleChange(user, e.target.value)}
                       className={`py-1 px-2 rounded-md border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} focus:ring-blue-500 focus:border-blue-500 text-sm`}
                   >
-                      <option value="Administrator" className={isDarkMode ? 'bg-gray-800' : 'bg-white'}>Administrator</option>
-                      <option value="Manager" className={isDarkMode ? 'bg-gray-800' : 'bg-white'}>Manager</option>
-                      <option value="Staff" className={isDarkMode ? 'bg-gray-800' : 'bg-white'}>Staff</option>
+                                    <option value="Administrator" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Administrator</option>
+                                    <option value="Tecnical_Head" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Tecnical Head</option>
+                                    <option value="Manager" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Service center Manager</option>
+                                    <option value="Technician" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Technician</option>
                   </select>
               </div>
 
@@ -192,6 +193,32 @@ const AddUser = () => {
             return;
         }
 
+        // Client-side validation before submission
+        if (!formData.fullname.trim()) {
+            setNotification({ message: "Full Name is required.", type: "error" });
+            setIsSubmitting(false);
+            return;
+        }
+        if (!formData.username.trim()) {
+            setNotification({ message: "Username is required.", type: "error" });
+            setIsSubmitting(false);
+            return;
+        }
+        if (!formData.email.trim()) {
+            setNotification({ message: "Email is required.", type: "error" });
+            setIsSubmitting(false);
+            return;
+        }
+        if (!formData.password.trim()) {
+            setNotification({ message: "Password is required.", type: "error" });
+            setIsSubmitting(false);
+            return;
+        }
+        if (!formData.role.trim()) {
+            setNotification({ message: "Role is required.", type: "error" });
+            setIsSubmitting(false);
+            return;
+        }
         try {
             const response = await axios.post(
                 "http://localhost:8000/api/users",
@@ -510,8 +537,9 @@ const AddUser = () => {
                                    // removed required attribute
                                 >
                                     <option value="Administrator" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Administrator</option>
-                                    <option value="Manager" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Manager</option>
-                                    <option value="Staff" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Staff</option>
+                                    <option value="Tecnical_Head" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Tecnical Head</option>
+                                    <option value="Manager" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Service center Manager</option>
+                                    <option value="Technician" className={isDarkMode ? 'bg-gray-600' : 'bg-white'}>Technician</option>
                                 </select>
                             </div>
                         </div>

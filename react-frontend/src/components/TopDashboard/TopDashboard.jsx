@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CompanySettingsContext } from '../../context/CompanySettingsContext';
 import axios from 'axios'; // Add axios import
 
+
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 const TopDashboard = () => {
@@ -43,40 +44,50 @@ const TopDashboard = () => {
 
   // Function to fetch user data from API
   const fetchUserData = async () => {
-    setIsLoadingUser(true);
-    setUserDataError(null);
-    
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        console.warn('No auth token found, redirecting to login');
-        navigate('/login');
-        return;
+  setIsLoadingUser(true);
+  setUserDataError(null);
+ 
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.warn('No auth token found, redirecting to login');
+      navigate('/login');
+      return;
+    }
+    const headers = { Authorization: `Bearer ${token}` };
+    const response = await axios.get(`${API_BASE_URL}/profile`, { headers });
+   
+    console.log('User data fetched from API:', response.data);
+   
+    // Extract user data from response
+    const userData = response.data;
+    const fullName = userData.username || 'User';
+    const profileImageUrl = userData.profile_image_url || null;
+   
+    setUserFullName(fullName);
+    setUserProfileImageUrl(profileImageUrl);
+   
+    // PRESERVE the existing user data including role
+    const existingUserData = localStorage.getItem('user');
+    let existingUser = {};
+    if (existingUserData) {
+      try {
+        existingUser = JSON.parse(existingUserData);
+      } catch (e) {
+        console.warn('Failed to parse existing user data');
       }
-
-      const headers = { Authorization: `Bearer ${token}` };
-      const response = await axios.get(`${API_BASE_URL}/profile`, { headers });
-      
-      console.log('User data fetched from API:', response.data);
-      
-      // Extract user data from response
-      const userData = response.data;
-      const fullName = userData.username || 'User';
-      const profileImageUrl = userData.profile_image_url || null;
-      
-      setUserFullName(fullName);
-      setUserProfileImageUrl(profileImageUrl);
-      
-      // Optional: Update localStorage as a backup/cache
-      const userDataForStorage = {
-        id: userData.id,
-        name: fullName,
-        username: userData.username,
-        email: userData.email,
-        profile_image_url: profileImageUrl,
-        // Add other fields as needed
-      };
-      localStorage.setItem('user', JSON.stringify(userDataForStorage));
+    }
+    
+    // Merge new data with existing data, preserving role
+    const userDataForStorage = {
+      ...existingUser, // Keep existing data (including role)
+      id: userData.id,
+      name: fullName,
+      username: userData.username,
+      email: userData.email,
+      profile_image_url: profileImageUrl,
+    };
+    localStorage.setItem('user', JSON.stringify(userDataForStorage));
       
     } catch (error) {
       console.error('Error fetching user data:', error);

@@ -15,6 +15,7 @@ import { Tag } from "lucide-react"; // Assuming 'Tag' is a fallback from Lucide
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import JobHome from "../JobHome/JobHome";
 import '../../components/SummaryDashboard/JobStatusPieChart'; // Ensure this path is correct
+import { useAuth } from "../../pages/hooks/useAuth";
 
 const DynamicIcons = {
     FaFaucet: FaFaucet,
@@ -66,6 +67,7 @@ const Home = () => {
     const [itemsLoading, setItemsLoading] = useState(true); // Loading state for items
     const [itemsError, setItemsError] = useState(null); // Error state for items
 
+    const { isAuthenticated, userRole, isLoading } = useAuth();
     // --- NEW STATE FOR DROPDOWN ---
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     // --- END NEW STATE ---
@@ -250,51 +252,56 @@ const Home = () => {
                     </div>
 
                     {/* --- NEW DROPDOWN CONTAINER --- */}
-                    <div className="relative inline-block text-left create-job-dropdown-container">
+                    {/*
+                        This is where you'll place the code snippet.
+                        A cleaner way to handle the conditional rendering is with a ternary operator.
+                    */}
+                    {userRole === 'Administrator' || userRole === 'Tecnical_Head' || userRole === 'Manager'  ? (
+                        <div className="relative inline-block text-left create-job-dropdown-container">
                         <button
                             type="button"
                             className={`${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-500 text-white hover:bg-blue-400'} px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md flex items-center`}
-                            onClick={handleDropdownToggle} // Call new toggle function
-                            aria-haspopup="true" // Accessibility attribute
-                            aria-expanded={isDropdownOpen ? "true" : "false"} // Accessibility attribute
+                            onClick={handleDropdownToggle}
+                            aria-haspopup="true"
+                            aria-expanded={isDropdownOpen ? "true" : "false"}
                         >
                             <IoIosAddCircle className="inline-block mr-2 text-lg" />
                             Create Job Card
                             <MdArrowDropDown className={`ml-1 text-xl transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
                         </button>
 
-                        {isDropdownOpen && ( // Conditionally render the dropdown
+                        {isDropdownOpen && (
                             <div
-                                className={`${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'} absolute right-0 mt-2 w-56 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10`}
-                                role="menu" // Accessibility role
-                                aria-orientation="vertical"
-                                aria-labelledby="menu-button"
-                                tabIndex="-1"
+                            className={`${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'} absolute right-0 mt-2 w-56 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10`}
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="menu-button"
+                            tabIndex="-1"
                             >
-                                <div className="py-1" role="none">
-                                    {items.length === 0 ? (
-                                        <div className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} px-4 py-2 text-sm`}>
-                                            No services available.
-                                        </div>
-                                    ) : (
-                                        items.map(item => (
-                                            <button
-                                                key={item.id} // Use item.id for unique key
-                                                className={`${isDarkMode ? 'text-gray-200 hover:bg-blue-600 hover:text-white' : 'text-gray-700 hover:bg-blue-500 hover:text-white'} block w-full text-left px-4 py-2 text-sm transition-colors duration-200`}
-                                                role="menuitem" // Accessibility role
-                                                tabIndex="-1"
-                                                onClick={() => handleCreateJobCardClick(item.name)} // Pass item.name
-                                            >
-                                                {item.name}
-                                            </button>
-                                        ))
-                                    )}
+                            <div className="py-1" role="none">
+                                {items.length === 0 ? (
+                                <div className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} px-4 py-2 text-sm`}>
+                                    No services available.
                                 </div>
+                                ) : (
+                                items.map(item => (
+                                    <button
+                                    key={item.id}
+                                    className={`${isDarkMode ? 'text-gray-200 hover:bg-blue-600 hover:text-white' : 'text-gray-700 hover:bg-blue-500 hover:text-white'} block w-full text-left px-4 py-2 text-sm transition-colors duration-200`}
+                                    role="menuitem"
+                                    tabIndex="-1"
+                                    onClick={() => handleCreateJobCardClick(item.name)}
+                                    >
+                                    {item.name}
+                                    </button>
+                                ))
+                                )}
+                            </div>
                             </div>
                         )}
-                    </div>
+                        </div>
+                    ) : null}
                     {/* --- END NEW DROPDOWN CONTAINER --- */}
-
                 </div>
             </div>
 

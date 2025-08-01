@@ -12,7 +12,11 @@ import {
   FaChevronUp, // Added for expand/collapse icon
 } from "react-icons/fa";
 import { ThemeContext } from "../../ThemeContext/ThemeContext";
+<<<<<<< HEAD
+// import jsPDF from "jspdf";
+=======
 import jsPDF from "jspdf";
+>>>>>>> 2a6651829b53e5ce30d2b16296e28b0734d064eb
 import Notification from '../../Notification/Notification'; // Import the Notification component
 
 const TaxInvoice = () => {

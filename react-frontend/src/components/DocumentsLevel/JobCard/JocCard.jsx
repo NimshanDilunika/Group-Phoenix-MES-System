@@ -1,7 +1,11 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { FaCalendarAlt, FaTrash, FaEdit, FaDownload, FaPrint, FaCheck,FaInfoCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa'; // Added FaChevronDown, FaChevronUp
 import { ThemeContext } from "../../ThemeContext/ThemeContext";
+<<<<<<< HEAD
+// import jsPDF from "jsPDF";
+=======
 import jsPDF from "jsPDF";
+>>>>>>> 2a6651829b53e5ce30d2b16296e28b0734d064eb
 import axios from "axios"; // Ensure axios is imported for data fetching
 import Notification from '../../Notification/Notification'; 
 

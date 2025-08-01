@@ -53,6 +53,7 @@ const LoginPage = () => {
 
         // --- FIXED: Store the token using the key 'authToken' ---
         localStorage.setItem('authToken', access_token);
+        console.log('user:', user); // Debugging line to check token
         localStorage.setItem('user', JSON.stringify(user));
         // Optionally store user data
         //localStorage.setItem('user_data', JSON.stringify(user));

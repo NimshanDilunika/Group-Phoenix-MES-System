@@ -26,15 +26,28 @@ class JobCardController extends Controller
             'generator_make' => 'nullable|string',
             'kva' => 'nullable|string',
             'engine_make' => 'nullable|string',
+            'engine_se_no' => 'nullable|string',
             'last_service' => 'nullable|string',
             'alternator_make' => 'nullable|string',
+            'alternator_se_no' => 'nullable|string',
             'gen_model' => 'nullable|string',
             'controller_module' => 'nullable|string',
             'avr' => 'nullable|string',
             'ats_info' => 'nullable|string',
             'job_description' => 'nullable|string',
-            'filters' => 'nullable|array',
-            'items' => 'nullable|array'
+            'items' => 'nullable|array',
+            'oil_filter_state' => 'nullable|boolean',
+            'oil_filter_value' => 'nullable|string',
+            'air_filter_state' => 'nullable|boolean',
+            'air_filter_value' => 'nullable|string',
+            'oil_state' => 'nullable|boolean',
+            'oil_value' => 'nullable|string',
+            'fuel_filter_state' => 'nullable|boolean',
+            'fuel_filter_value' => 'nullable|string',
+            'battery_charge_state' => 'nullable|boolean',
+            'battery_charge_value' => 'nullable|string',
+            'battery_value' => 'nullable|string',
+            'other_value' => 'nullable|string',
         ]);
 
         // Check if a jobcard already exists for this job_home_id
@@ -91,15 +104,28 @@ class JobCardController extends Controller
             'generator_make' => 'nullable|string',
             'kva' => 'nullable|string',
             'engine_make' => 'nullable|string',
+            'engine_se_no' => 'nullable|string',
             'last_service' => 'nullable|string',
             'alternator_make' => 'nullable|string',
+            'alternator_se_no' => 'nullable|string',
             'gen_model' => 'nullable|string',
             'controller_module' => 'nullable|string',
             'avr' => 'nullable|string',
             'ats_info' => 'nullable|string',
             'job_description' => 'nullable|string',
-            'filters' => 'nullable|array',
-            'items' => 'nullable|array'
+            'items' => 'nullable|array',
+            'oil_filter_state' => 'nullable|boolean',
+            'oil_filter_value' => 'nullable|string',
+            'air_filter_state' => 'nullable|boolean',
+            'air_filter_value' => 'nullable|string',
+            'oil_state' => 'nullable|boolean',
+            'oil_value' => 'nullable|string',
+            'fuel_filter_state' => 'nullable|boolean',
+            'fuel_filter_value' => 'nullable|string',
+            'battery_charge_state' => 'nullable|boolean',
+            'battery_charge_value' => 'nullable|string',
+            'battery_value' => 'nullable|string',
+            'other_value' => 'nullable|string',
         ]);
 
         $jobCard->update($validated);
@@ -120,10 +146,16 @@ class JobCardController extends Controller
 
         $incomingItems = collect($request->items ?? []);
 
+        // Normalize incoming items keys to use 'materials_no' instead of 'materialsNo'
+        $normalizedIncomingItems = $incomingItems->map(function ($item) {
+            $item['materials_no'] = $item['materialsNo'] ?? '';
+            return $item;
+        });
+
         // Update or create items
-        foreach ($incomingItems as $item) {
+        foreach ($normalizedIncomingItems as $item) {
             if (!empty($item['materials'])) {
-                $existingItem = $existingItems->firstWhere('materials_no', $item['materialsNo'] ?? '');
+                $existingItem = $existingItems->firstWhere('materials_no', $item['materials_no']);
 
                 if ($existingItem) {
                     // Update existing item
@@ -136,7 +168,7 @@ class JobCardController extends Controller
                     // Create new item
                     \App\Models\JobItem::create([
                         'job_home_id' => $jobHomeId,
-                        'materials_no' => $item['materialsNo'] ?? '',
+                        'materials_no' => $item['materials_no'],
                         'materials' => $item['materials'],
                         'quantity' => $item['quantity'],
                         'unit_price' => $item['unit_price'] ?? 0,
@@ -146,7 +178,7 @@ class JobCardController extends Controller
         }
 
         // Delete items not present in incoming request
-        $incomingMaterialsNos = $incomingItems->pluck('materialsNo')->filter()->all();
+        $incomingMaterialsNos = $normalizedIncomingItems->pluck('materials_no')->filter()->all();
 
         foreach ($existingItems as $existingItem) {
             if (!in_array($existingItem->materials_no, $incomingMaterialsNos)) {

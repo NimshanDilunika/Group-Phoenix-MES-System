@@ -58,10 +58,11 @@ class JobHomeController extends Controller
             'customer_ok' => 'nullable|boolean',
             'special_approve' => 'nullable|boolean',
             'customer_id' => 'nullable|exists:customers,customer_id',
+            'job_status' => 'nullable|string',
         ]);
 
         $jobHome = JobHome::findOrFail($id);
-        $jobHome->update($request->only(['service_start', 'service_end', 'customer_ok', 'special_approve', 'customer_id']));
+        $jobHome->update($request->only(['service_start', 'service_end', 'customer_ok', 'special_approve', 'customer_id', 'job_status']));
         return response()->json($jobHome);
     }
 

@@ -2,11 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\JobHomeTechnicianController;
+
 use App\Http\Controllers\Api\CustomerController;
 
 use App\Http\Controllers\CompanySettingsController; // Assuming you still have this
 use App\Http\Controllers\ProfileController; // Add this lin
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Api\AreaController;
@@ -70,6 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Add new route to delete customers by branch type
     Route::delete('/customers/delete-by-branch-type/{branchName}', [CustomerController::class, 'deleteByBranchType']);
+
+    // New routes for technicians assignment
+    Route::get('/technicians', [UserController::class, 'getTechnicians']);
+    Route::get('/jobhomes/{jobhomeId}/technicians', [JobHomeTechnicianController::class, 'getAssignedTechnicians']);
+    Route::post('/jobhomes/{jobhomeId}/technicians', [JobHomeTechnicianController::class, 'assignTechnicians']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -89,18 +96,14 @@ Route::post('/company-settings', [CompanySettingsController::class, 'update']);
 Route::get('/company-settings/logo/{id}', [CompanySettingsController::class, 'logo'])->name('company.logo');
 Route::get('/profile/image/{id}', [ProfileController::class, 'profileImage'])->name('user.profile.image');
 
-
-
 Route::get('/areas', [CustomerController::class, 'areas']);
 Route::apiResource('customers', CustomerController::class);
-
 
 Route::apiResource('areas', AreaController::class);
 
 Route::post('/jobcards', [JobCardController::class, 'store']);
 Route::put('/jobcards/{id}', [JobCardController::class, 'update']);
 Route::get('/jobcards/{id}', [JobCardController::class, 'show']);
-
 
 Route::get('/job-homes', [JobHomeController::class, 'index']);
 Route::post('/job-homes', [JobHomeController::class, 'store']);

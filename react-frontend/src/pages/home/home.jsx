@@ -75,63 +75,7 @@ const Home = () => {
         { id: 61, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
         { id: 31, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
         { id: 32, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 33, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 2, title: "Solar Panel Setup", company: "XYZ Corp", date: "10 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 3, title: "AC Maintenance", company: "HomeCare", date: "15 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 4, title: "Generator Repair", company: "ABC Company", date: "20 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 5, title: "Solar Installation", company: "SolarTech", date: "25 March 2024", status: "Cancelled", service: "Solar Systems" },
-        { id: 6, title: "AC Installation", company: "HomeCare", date: "30 March 2024", status: "In Process", service: "Air Conditioning", description: "Initial job registration" },
-        { id: 7, title: "HVAC System Setup", company: "ThermoTech", date: "01 April 2024", status: "In Process", service: "HVAC" },
-        { id: 8, title: "Solar Battery Backup", company: "Renew Power", date: "12 April 2024", status: "Pending", service: "Solar Systems" },
-        { id: 9, title: "Pool Heater Installation", company: "Aqua Solutions", date: "18 April 2024", status: "Completed", service: "Pool Services" },
-        { id: 10, title: "Wind Turbine Setup", company: "EcoPower", date: "23 April 2024", status: "In Process", service: "Wind Energy" },
-        { id: 11, title: "Roof Insulation", company: "HomeCare", date: "28 April 2024", status: "Todo", service: "Home Improvement" },
-        { id: 12, title: "Generator Maintenance", company: "ABC Company", date: "05 May 2024", status: "Todo", service: "Generator Services" },
-        { id: 13, title: "Solar Panel Replacement", company: "SolarTech", date: "11 May 2024", status: "Pending", service: "Solar Systems" },
-        { id: 14, title: "Air Duct Cleaning", company: "CleanAir", date: "20 May 2024", status: "Completed", service: "Air Conditioning" },
-        { id: 15, title: "Electrical Panel Upgrade", company: "ABC Company", date: "25 May 2024", status: "In Process", service: "Electrical Services" },
-        { id: 16, title: "Solar Energy Storage Installation", company: "Renew Power", date: "02 June 2024", status: "In Process", service: "Solar Systems" },
-        { id: 17, title: "Water Heater Replacement", company: "Plumbing Pros", date: "07 June 2024", status: "Pending", service: "Plumbing Services" },
-        { id: 18, title: "New AC Unit Installation", company: "HomeCare", date: "14 June 2024", status: "Completed", service: "Air Conditioning" },
-        { id: 19, title: "Wind Turbine Maintenance", company: "EcoPower", date: "19 June 2024", status: "Cancelled", service: "Wind Energy" },
-        { id: 20, title: "Solar Water Heater Installation", company: "SolarTech", date: "22 June 2024", status: "In Process", service: "Solar Systems" },
-        { id: 21, title: "Smart Thermostat Installation", company: "Smart Home", date: "25 June 2024", status: "Todo", service: "Home Automation" },
-        { id: 22, title: "Home Solar Panel Setup", company: "Green Energy", date: "01 July 2024", status: "In Process", service: "Solar Systems" },
-        { id: 23, title: "Water Filtration System Setup", company: "Pure Water", date: "08 July 2024", status: "Pending", service: "Plumbing Services" },
-        { id: 24, title: "Lighting Control System", company: "Smart Home", date: "15 July 2024", status: "Completed", service: "Home Automation" },
-        { id: 25, title: "Fireplace Installation", company: "HomeCare", date: "22 July 2024", status: "Pending", service: "Home Improvement" },
-        { id: 26, title: "Electric Vehicle Charger Installation", company: "EV Solutions", date: "29 July 2024", status: "In Process", service: "Electric Services" },
-        { id: 27, title: "Solar Panel Testing", company: "SolarTech", date: "03 August 2024", status: "Completed", service: "Solar Systems" },
-        { id: 28, title: "Electric Water Heater Setup", company: "Plumbing Pros", date: "10 August 2024", status: "In Process", service: "Plumbing Services" },
-        { id: 29, title: "Home Battery Backup", company: "Renew Power", date: "17 August 2024", status: "Pending", service: "Home Energy" },
-        { id: 30, title: "Solar Water Pump Installation", company: "SolarTech", date: "24 August 2024", status: "Completed", service: "Solar Systems" },
-        { id: 34, title: "Smart Home Setup", company: "Tech Solutions", date: "30 August 2024", status: "In Process", service: "Home Automation" },
-        { id: 35, title: "HVAC Repair", company: "ThermoTech", date: "05 September 2024", status: "Pending", service: "HVAC" },
-        { id: 36, title: "Solar System Upgrade", company: "SolarTech", date: "10 September 2024", status: "Completed", service: "Solar Systems" },
-        { id: 37, title: "Water Pump Repair", company: "Plumbing Pros", date: "15 September 2024", status: "Cancelled", service: "Plumbing Services" },
-        { id: 38, title: "Generator Tune-up", company: "ABC Company", date: "20 September 2024", status: "Todo", service: "Generator Services" },
-        { id: 39, title: "AC Filter Replacement", company: "CleanAir", date: "25 September 2024", status: "In Process", service: "Air Conditioning" },
-        { id: 40, title: "Electrical Wiring Check", company: "EV Solutions", date: "30 September 2024", status: "Pending", service: "Electrical Services" },
-        { id: 41, title: "Solar Panel Cleaning", company: "SolarTech", date: "05 October 2024", status: "Completed", service: "Solar Systems" },
-        { id: 42, title: "Water Heater Installation", company: "Plumbing Pros", date: "10 October 2024", status: "In Process", service: "Plumbing Services" },
-        { id: 43, title: "Home Energy Audit", company: "Renew Power", date: "15 October 2024", status: "Pending", service: "Home Energy" },
-        { id: 44, title: "Smart Lighting Setup", company: "Smart Home", date: "20 October 2024", status: "Todo", service: "Generator Services" },
-        { id: 45, title: "Fire Alarm Installation", company: "HomeCare", date: "25 October 2024", status: "Completed", service: "Home Improvement" },
-        { id: 46, title: "EV Charger Repair", company: "EV Solutions", date: "30 October 2024", status: "Cancelled", service: "Electric Services" },
-        { id: 47, title: "Solar Inverter Repair", company: "SolarTech", date: "05 November 2024", status: "In Process", service: "Solar Systems" },
-        { id: 48, title: "Water Softener Setup", company: "Pure Water", date: "10 November 2024", status: "Pending", service: "Plumbing Services" },
-        { id: 49, title: "Home Battery Maintenance", company: "Renew Power", date: "15 November 2024", status: "Completed", service: "Home Energy" },
-        { id: 50, title: "Smart Lock Installation", company: "Smart Home", date: "20 November 2024", status: "Todo", service: "Generator Services" },
-        { id: 51, title: "Chimney Cleaning", company: "HomeCare", date: "25 November 2024", status: "In Process", service: "Home Improvement" },
-        { id: 52, title: "Electrical Panel Repair", company: "EV Solutions", date: "30 November 2024", status: "Pending", service: "Electric Services" },
-        { id: 53, title: "Solar Panel Inspection", company: "SolarTech", date: "05 December 2024", status: "Completed", service: "Solar Systems" },
-        { id: 54, title: "Drain Cleaning", company: "Plumbing Pros", date: "10 December 2024", status: "Cancelled", service: "Plumbing Services" },
-        { id: 55, title: "Generator Overhaul", company: "ABC Company", date: "15 December 2024", status: "Todo", service: "Generator Services" },
-        { id: 56, title: "AC Compressor Repair", company: "CleanAir", date: "20 December 2024", status: "Pending", service: "Air Conditioning" },
-        { id: 57, title: "Smart Thermostat Repair", company: "Smart Home", date: "25 December 2024", status: "Completed", service: "Home Automation" },
-        { id: 58, title: "Roof Repair", company: "HomeCare", date: "30 December 2024", status: "Todo", service: "Home Improvement" },
-        { id: 59, title: "EV Charging Station Setup", company: "EV Solutions", date: "04 January 2025", status: "In Process", service: "Electric Services" },
-        { id: 60, title: "Solar System Maintenance", company: "SolarTech", date: "09 January 2025", status: "Pending", service: "Solar Systems" }
+        
     ];
 
     useEffect(() => {
@@ -176,18 +120,6 @@ const Home = () => {
         acc[job.status] = (acc[job.status] || 0) + 1;
         return acc;
     }, {});
-
-    // Removed jobCountsByServiceAndStatus as it's not currently used in the UI
-    // const jobCountsByServiceAndStatus = jobs.reduce((acc, job) => {
-    //     if (!acc[job.service]) {
-    //         acc[job.service] = {};
-    //     }
-    //     if (!acc[job.service][job.status]) {
-    //         acc[job.service][job.status] = 0;
-    //     }
-    //     acc[job.service][job.status]++;
-    //     return acc;
-    // }, {});
 
     const services = items.map(item => {
         const IconComponent = DynamicIcons[item.icon] || Tag; // Get the component from the map, fallback to Tag

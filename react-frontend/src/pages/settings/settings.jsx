@@ -4,6 +4,7 @@ import { Check } from 'react-feather';
 import { FiUser } from "react-icons/fi";
 import axios from 'axios';
 import { CompanySettingsContext } from '../../context/CompanySettingsContext';
+import Notification from '../../components/Notification/Notification'; // Import the Notification component
 
 // Base URL for your Laravel API
 // IMPORTANT: Adjust this to your actual Laravel backend URL
@@ -113,10 +114,6 @@ const Settings = () => {
             setSelectedFile(null);
             setIsImageRemoved(false);
 
-            // Clear success message after a delay
-            setTimeout(() => {
-                setSaveSuccessMessage("");
-            }, 3000);
 
         } catch (error) {
             console.error('Error saving profile:', error);
@@ -181,13 +178,10 @@ const Settings = () => {
                 </div>
             </div>
             
-            {/* Success Message */}
-            {saveSuccessMessage && (
-                <div className="bg-green-600 text-white p-4 rounded-lg flex items-center space-x-2 mb-4 mt-6">
-                    <Check size={20} />
-                        <span>{saveSuccessMessage}</span>
-                </div>
-            )}
+            {/* Notification Components */}
+            {saveSuccessMessage && <Notification message={saveSuccessMessage} type="success" onClose={() => setSaveSuccessMessage("")} />}
+            {errorMessage && <Notification message={errorMessage} type="error" onClose={() => setErrorMessage("")} />}
+
             <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-start gap-6 mt-8`}>
                 <div className="flex-1 max-w-[48%] space-y-6">
                     {/* Company Image Section */}

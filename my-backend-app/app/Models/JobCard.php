@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobCard extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'job_home_id',
         'selected_date',
         'customer_name', 
@@ -18,17 +18,29 @@ class JobCard extends Model
         'generator_make', 
         'kva',
         'engine_make', 
+        'engine_se_no',
         'last_service', 
         'alternator_make', 
+        'alternator_se_no',
         'gen_model',
         'controller_module', 
         'avr', 'ats_info', 
         'job_description', 
-        'filters',
+        'oil_filter_state',
+        'oil_filter_value',
+        'air_filter_state',
+        'air_filter_value',
+        'oil_state',
+        'oil_value',
+        'fuel_filter_state',
+        'fuel_filter_value',
+        'battery_charge_state',
+        'battery_charge_value',
+        'battery_value',
+        'other_value',
     ];
 
     protected $casts = [
-        'filters' => 'array',
     ];
 
     public function items()

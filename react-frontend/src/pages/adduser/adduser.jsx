@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { User, Mail, Lock, Shield, Check, XCircle, UserPlus, Trash2, Phone,Eye, EyeOff } from "lucide-react"; // Added Phone icon
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
+import Notification from "../../components/Notification/Notification"; // Import the new Notification component
 
 // ConfirmationModal component (remains the same)
 const ConfirmationModal = ({ show, title, message, onConfirm, onCancel, isDarkMode }) => {
@@ -111,8 +112,9 @@ const AddUser = () => {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
+    
+    // New state for Notification component
+    const [notification, setNotification] = useState({ message: '', type: '' });
 
     // State for Modals (for delete/update confirmations)
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -136,20 +138,9 @@ const AddUser = () => {
         }
     }, [currentUserId]);
 
-    // This useEffect is for auto-clearing success/error messages for ADD USER FORM
-    useEffect(() => {
-        if (successMessage || errorMessage) {
-            const timer = setTimeout(() => {
-                setSuccessMessage("");
-                setErrorMessage("");
-            }, 5000); // Messages disappear after 5 seconds
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, errorMessage]);
-
     const fetchCurrentUser = async () => {
         if (!authToken) {
-            setErrorMessage("Authentication token not found. Please log in.");
+            setNotification({ message: "Authentication token not found. Please log in.", type: "error" });
             return;
         }
         try {
@@ -158,13 +149,13 @@ const AddUser = () => {
             });
             setCurrentUserId(response.data.id);
         } catch (error) {
-            setErrorMessage("Failed to fetch current user info.");
+            setNotification({ message: "Failed to fetch current user info.", type: "error" });
         }
     };
 
     const fetchUsers = async () => {
         if (!authToken) {
-            setErrorMessage("Authentication token not found. Please log in.");
+            setNotification({ message: "Authentication token not found. Please log in.", type: "error" });
             return;
         }
         setLoadingUsers(true);
@@ -176,7 +167,7 @@ const AddUser = () => {
             const filteredUsers = usersData.filter(user => user.id !== currentUserId);
             setUsers(filteredUsers);
         } catch (error) {
-            setErrorMessage("Failed to fetch users. " + (error.response?.data?.message || error.message));
+            setNotification({ message: "Failed to fetch users. " + (error.response?.data?.message || error.message), type: "error" });
         } finally {
             setLoadingUsers(false);
         }
@@ -193,11 +184,10 @@ const AddUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setSuccessMessage("");
-        setErrorMessage("");
+        setNotification({ message: '', type: '' }); // Clear previous notifications
 
         if (!authToken) {
-            setErrorMessage("Authentication token not found. Please log in.");
+            setNotification({ message: "Authentication token not found. Please log in.", type: "error" });
             setIsSubmitting(false);
             return;
         }
@@ -215,7 +205,7 @@ const AddUser = () => {
             );
 
             if (response.data.status === 'success') {
-                setSuccessMessage(response.data.message || `User ${formData.fullname || formData.email} has been added successfully!`);
+                setNotification({ message: response.data.message || `User ${formData.fullname || formData.email} has been added successfully!`, type: "success" });
                 setFormData({
                     fullname: "",
                     username: "",
@@ -227,12 +217,12 @@ const AddUser = () => {
                 });
                 fetchUsers();
             } else {
-                setErrorMessage(response.data.message || "An unexpected response was received.");
+                setNotification({ message: response.data.message || "An unexpected response was received.", type: "error" });
             }
         } catch (error) {
             if (error.response) {
                 if (error.response.status === 401) {
-                    setErrorMessage("Unauthorized: Please log in again.");
+                    setNotification({ message: "Unauthorized: Please log in again.", type: "error" });
                 } else if (error.response.status === 422) {
                     const errors = error.response.data.errors;
                     let errorMsg = "Validation failed. Please correct the following errors:\n";
@@ -241,14 +231,14 @@ const AddUser = () => {
                             errorMsg += `- ${key}: ${errors[key].join(', ')}\n`;
                         }
                     }
-                    setErrorMessage(errorMsg);
+                    setNotification({ message: errorMsg, type: "error" });
                 } else {
-                    setErrorMessage(error.response.data.message || `Server Error: ${error.response.status} ${error.response.statusText}`);
+                    setNotification({ message: error.response.data.message || `Server Error: ${error.response.status} ${error.response.statusText}`, type: "error" });
                 }
             } else if (error.request) {
-                setErrorMessage("Network Error: No response from server. Please check if the backend is running and accessible.");
+                setNotification({ message: "Network Error: No response from server. Please check if the backend is running and accessible.", type: "error" });
             } else {
-                setErrorMessage(`Client Error: ${error.message}`);
+                setNotification({ message: `Client Error: ${error.message}`, type: "error" });
             }
         } finally {
             setIsSubmitting(false);
@@ -274,11 +264,10 @@ const AddUser = () => {
 
     const handleConfirmAction = async () => {
         setShowConfirmModal(false);
-        setSuccessMessage("");
-        setErrorMessage("");
+        setNotification({ message: '', type: '' }); // Clear previous notifications
 
         if (!authToken) {
-            setErrorMessage("Authentication token not found. Please log in.");
+            setNotification({ message: "Authentication token not found. Please log in.", type: "error" });
             setSelectedUser(null);
             setNewRoleForUpdate('');
             setModalAction(null);
@@ -297,18 +286,18 @@ const AddUser = () => {
                     }
                 });
                 if (response.data.status === 'success') {
-                    setSuccessMessage(response.data.message);
+                    setNotification({ message: response.data.message, type: "success" });
                     fetchUsers();
                 } else {
-                    setErrorMessage(response.data.message || "Failed to update role.");
+                    setNotification({ message: response.data.message || "Failed to update role.", type: "error" });
                 }
             } catch (error) {
                 if (error.response) {
-                    setErrorMessage(error.response.data.message || "Error updating role.");
+                    setNotification({ message: error.response.data.message || "Error updating role.", type: "error" });
                 } else if (error.request) {
-                    setErrorMessage("No response from server while updating role.");
+                    setNotification({ message: "No response from server while updating role.", type: "error" });
                 } else {
-                    setErrorMessage(`Error updating role: ${error.message}`);
+                    setNotification({ message: `Error updating role: ${error.message}`, type: "error" });
                 }
             }
         } else if (modalAction === 'delete' && selectedUser) {
@@ -321,18 +310,18 @@ const AddUser = () => {
                     }
                 });
                 if (response.data.status === 'success') {
-                    setSuccessMessage(response.data.message);
+                    setNotification({ message: response.data.message, type: "success" });
                     fetchUsers();
                 } else {
-                    setErrorMessage(response.data.message || "Failed to delete user.");
+                    setNotification({ message: response.data.message || "Failed to delete user.", type: "error" });
                 }
             } catch (error) {
                 if (error.response) {
-                    setErrorMessage(error.response.data.message || "Error deleting user.");
+                    setNotification({ message: error.response.data.message || "Error deleting user.", type: "error" });
                 } else if (error.request) {
-                    setErrorMessage("No response from server while deleting user.");
+                    setNotification({ message: "No response from server while deleting user.", type: "error" });
                 } else {
-                    setErrorMessage(`Error deleting user: ${error.message}`);
+                    setNotification({ message: `Error deleting user: ${error.message}`, type: "error" });
                 }
             }
         }
@@ -346,7 +335,8 @@ const AddUser = () => {
         setSelectedUser(null);
         setNewRoleForUpdate('');
         setModalAction(null);
-        fetchUsers();
+        // No need to clear notification here, it's managed by the Notification component itself
+        // fetchUsers(); // Re-fetch users if needed after cancel, but usually not required
     };
 
     const inputBgColor = isDarkMode ? 'bg-gray-800' : 'bg-gray-200';
@@ -355,26 +345,18 @@ const AddUser = () => {
 
     return (
         <div className={`p-6 space-y-8 min-h-screen ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <Notification
+                message={notification.message}
+                type={notification.type}
+                onClose={() => setNotification({ message: '', type: '' })}
+            />
+
             <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
                 <div>
                     <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Add New User</h1>
                     <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Create a new system user</p>
                 </div>
             </div>
-
-            {successMessage && (
-                <div className="bg-green-600 text-white p-4 rounded-lg flex items-center space-x-2">
-                    <Check size={20} />
-                    <span>{successMessage}</span>
-                </div>
-            )}
-
-            {errorMessage && (
-                <div className="bg-red-600 text-white p-4 rounded-lg flex items-start space-x-2">
-                    <XCircle size={20} className="mt-1" />
-                    <span className="whitespace-pre-line">{errorMessage}</span>
-                </div>
-            )}
 
             <ConfirmationModal
                 show={showConfirmModal}

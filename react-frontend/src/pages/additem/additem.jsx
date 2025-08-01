@@ -3,6 +3,7 @@ import { Check, Tag, Trash2, Edit, Save, X, WifiOff } from "lucide-react";
 import * as LucideIcons from "lucide-react"; // Import all Lucide icons
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext"; // Re-added ThemeContext import
 import axios from "axios"; // Import Axios
+import Notification from '../../components/Notification/Notification'; // Import the Notification component
 
 // Confirmation Modal Component (defined here for self-contained example)
 // You might move this to its own file (e.g., components/ConfirmationModal.jsx)
@@ -45,8 +46,9 @@ const AddItem = () => {
     icon: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
+  // Removed successMessage and errorMessage states, as Notification component will handle display
+  // const [successMessage, setSuccessMessage] = useState("");
+  // const [errorMessage, setErrorMessage] = useState(""); // State for error messages
 
   const [items, setItems] = useState([]);
   const [editingItemId, setEditingItemId] = useState(null);
@@ -61,22 +63,20 @@ const AddItem = () => {
   const [itemToDeleteId, setItemToDeleteId] = useState(null);
   const [itemToDeleteName, setItemToDeleteName] = useState("");
 
+  // Notification State
+  const [notification, setNotification] = useState({ message: "", type: "" }); // type: 'success' or 'error'
+
+  // Function to show notification
+  const showNotification = (message, type) => {
+      setNotification({ message, type });
+      // The Notification component itself has a setTimeout to hide, so no need for it here unless specific logic is needed
+  };
+
 
   // Effect to fetch items on component mount
   useEffect(() => {
     fetchItems();
   }, []);
-
-  // Effect for auto-clearing success/error messages
-  useEffect(() => {
-    if (successMessage || errorMessage) {
-      const timer = setTimeout(() => {
-        setSuccessMessage("");
-        setErrorMessage("");
-      }, 5000); // Messages disappear after 5 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage, errorMessage]);
 
   // Function to fetch all items from the API
   const fetchItems = async () => {
@@ -84,7 +84,7 @@ const AddItem = () => {
       // Changed to 'authToken' for consistency with AddUser.jsx
       const token = localStorage.getItem("authToken");
       if (!token) {
-        setErrorMessage("User is not authenticated. Please log in.");
+        showNotification("User is not authenticated. Please log in.", "error");
         return;
       }
       const response = await axios.get("http://127.0.0.1:8000/api/items", {
@@ -95,8 +95,8 @@ const AddItem = () => {
       setItems(response.data);
     } catch (error) {
       console.error("Error fetching items:", error);
-      setErrorMessage("Failed to fetch items. " + (error.response?.data?.message || error.message));
-      setTimeout(() => setErrorMessage(""), 5000);
+      const msg = "Failed to fetch items. " + (error.response?.data?.message || error.message);
+      showNotification(msg, "error");
     }
   };
 
@@ -122,14 +122,17 @@ const AddItem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSuccessMessage(""); // Clear previous messages
-    setErrorMessage("");
+    // Removed direct clearing of success/error messages here. Notification state is cleared by `setNotification` below.
+    // setSuccessMessage(""); // Clear previous messages
+    // setErrorMessage("");
+    setNotification({ message: "", type: "" }); // Clear previous notification
 
     try {
       // Changed to 'authToken' for consistency with AddUser.jsx
       const token = localStorage.getItem("authToken");
       if (!token) {
-        setErrorMessage("User is not authenticated. Please log in.");
+        const msg = "User is not authenticated. Please log in.";
+        showNotification(msg, "error");
         setIsSubmitting(false);
         return;
       }
@@ -151,9 +154,8 @@ const AddItem = () => {
       );
 
       if (response.status === 201) {
-        setSuccessMessage(
-          `Item "${formData.itemName || "New Item"}" has been added successfully!`
-        );
+        const msg = `Item "${formData.itemName || "New Item"}" has been added successfully!`;
+        showNotification(msg, "success");
         // Clear form fields after successful submission
         setFormData({
           itemName: "",
@@ -164,31 +166,30 @@ const AddItem = () => {
       }
     } catch (error) {
       console.error("Error adding item:", error);
+      let errorMsg = "Failed to add item. ";
       if (error.response) {
         if (error.response.status === 422) {
           // Handle validation errors from the backend
           const errors = error.response.data.errors;
-          let errorMsg = "Validation failed. Please correct the following errors:\n";
+          errorMsg = "Validation failed. Please correct the following errors:\n";
           for (const key in errors) {
             if (errors.hasOwnProperty(key)) {
               errorMsg += `- ${key}: ${errors[key].join(', ')}\n`;
             }
           }
-          setErrorMessage(errorMsg);
         } else {
           // Handle other server-side errors
-          setErrorMessage(
-            error.response.data.message ||
-              `Server Error: ${error.response.status} ${error.response.statusText}`
-          );
+          errorMsg += error.response.data.message ||
+                      `Server Error: ${error.response.status} ${error.response.statusText}`;
         }
       } else if (error.request) {
         // The request was made but no response was received
-        setErrorMessage("Network Error: No response from server. Please check if the backend is running and accessible.");
+        errorMsg += "Network Error: No response from server. Please check if the backend is running and accessible.";
       } else {
         // Something happened in setting up the request that triggered an Error
-        setErrorMessage(`Client Error: ${error.message}`);
+        errorMsg += `Client Error: ${error.message}`;
       }
+      showNotification(errorMsg, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -207,11 +208,14 @@ const AddItem = () => {
     if (!itemToDeleteId) return; // Should not happen if modal is properly used
 
     try {
-      setErrorMessage(""); // Clear any existing error messages
+      // Removed direct clearing of error messages. Notification state is cleared by `setNotification` below.
+      // setErrorMessage(""); // Clear any existing error messages
+      setNotification({ message: "", type: "" }); // Clear previous notification
 
       const token = localStorage.getItem("authToken");
       if (!token) {
-        setErrorMessage("User is not authenticated. Please log in.");
+        const msg = "User is not authenticated. Please log in.";
+        showNotification(msg, "error");
         return;
       }
 
@@ -227,14 +231,16 @@ const AddItem = () => {
       console.log('Delete response:', response);
 
       if (response.status === 200 || response.status === 204) {
-        setSuccessMessage(`Item "${itemToDeleteName}" deleted successfully.`);
+        const msg = `Item "${itemToDeleteName}" deleted successfully.`;
+        showNotification(msg, "success");
         // Update local state immediately for better UX
         setItems(prevItems => prevItems.filter(item => item.id !== itemToDeleteId));
         // Then refresh from server to ensure consistency, with a slight delay
         setTimeout(() => fetchItems(), 500);
       } else {
         console.warn('Unexpected response status:', response.status);
-        setErrorMessage(`Unexpected response: ${response.status}`);
+        const msg = `Unexpected response: ${response.status}`;
+        showNotification(msg, "error");
       }
 
     } catch (error) {
@@ -273,8 +279,7 @@ const AddItem = () => {
         errorMsg += `Request error: ${error.message}`;
       }
 
-      setErrorMessage(errorMsg);
-      setTimeout(() => setErrorMessage(""), 5000);
+      showNotification(errorMsg, "error");
     } finally {
       setItemToDeleteId(null);
       setItemToDeleteName("");
@@ -313,10 +318,12 @@ const AddItem = () => {
   // Saves the edited item data to the API
   const saveEdit = async (id) => {
     try {
+      setNotification({ message: "", type: "" }); // Clear previous notification
       // Changed to 'authToken' for consistency with AddUser.jsx
       const token = localStorage.getItem("authToken");
       if (!token) {
-        setErrorMessage("User is not authenticated. Please log in.");
+        const msg = "User is not authenticated. Please log in.";
+        showNotification(msg, "error");
         return;
       }
       const response = await axios.put(
@@ -336,14 +343,15 @@ const AddItem = () => {
         }
       );
       if (response.status === 200) {
-        setSuccessMessage("Item updated successfully.");
+        const msg = "Item updated successfully.";
+        showNotification(msg, "success");
         setEditingItemId(null); // Exit editing mode
         fetchItems(); // Refresh the list of items
       }
     } catch (error) {
       console.error("Error updating item:", error);
-      setErrorMessage("Failed to update item. " + (error.response?.data?.message || error.message));
-      setTimeout(() => setErrorMessage(""), 5000);
+      const msg = "Failed to update item. " + (error.response?.data?.message || error.message);
+      showNotification(msg, "error");
     }
   };
 
@@ -370,6 +378,14 @@ const AddItem = () => {
         isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
       } space-y-8 p-6 min-h-screen flex flex-col`}
     >
+      {/* Notification Popup */}
+      {notification.message && (
+          <Notification
+              message={notification.message}
+              type={notification.type}
+          />
+      )}
+
       {/* Page Header */}
       <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
         <div>
@@ -378,7 +394,7 @@ const AddItem = () => {
         </div>
       </div>
 
-      {/* Success and Error Messages Display */}
+      {/* Removed Success and Error Messages Display (now handled by Notification component)
       {successMessage && (
         <div className="bg-green-500 text-white p-3 rounded-lg shadow-md flex items-center justify-between">
           <span>{successMessage}</span>
@@ -389,12 +405,13 @@ const AddItem = () => {
       )}
       {errorMessage && (
         <div className="bg-red-500 text-white p-3 rounded-lg shadow-md flex items-start justify-between">
-          <span className="whitespace-pre-line">{errorMessage}</span> {/* Use whitespace-pre-line for multi-line errors */}
+          <span className="whitespace-pre-line">{errorMessage}</span>
           <button onClick={() => setErrorMessage("")} className="ml-4">
             <X size={20} />
           </button>
         </div>
       )}
+      */}
 
       {/* Add Item Form Section */}
       <div
@@ -499,16 +516,6 @@ const AddItem = () => {
                   isDarkMode ? "text-gray-500" : "text-gray-700"
                 }`}
               >
-                {/* Enter the name of a{" "}
-                <a
-                  href="https://lucide.dev/icons"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  Lucide icon
-                </a>
-                . */}
                 <b>You can add these Icon Names :</b><br></br>FaFaucet , Unplug , Hammer , GiMechanicGarage , BatteryCharging , AirVent , SunDim , MonitorCog , Wind , Cable , Bug , Cog , Phone , Volume2 , Wrench , Waves , Tag
               </p>
             </div>
@@ -579,8 +586,8 @@ const AddItem = () => {
                     <div className="flex items-center space-x-2">
                       <label htmlFor={`edit-icon-${item.id}`} className="text-sm font-medium w-24">Icon:</label>
                       <div className={`flex items-center space-x-2 border p-2 rounded-md flex-grow ${inputBgColor}`}>
-                         {/* Live preview for icon during editing */}
-                         {renderLucideIcon(
+                          {/* Live preview for icon during editing */}
+                          {renderLucideIcon(
                             editFormData.icon,
                             20,
                             isDarkMode ? "text-blue-400" : "text-blue-500"

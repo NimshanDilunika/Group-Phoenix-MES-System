@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobHome extends Model
 {
-    protected $fillable = ['job_no', 'job_type', 'service_start', 'service_end', 'customer_ok', 'special_approve', 'customer_id'];
+    protected $fillable = ['job_no', 'job_type', 'job_status', 'service_start', 'service_end', 'customer_ok', 'special_approve', 'customer_id'];
 
     public function jobCard()
     {

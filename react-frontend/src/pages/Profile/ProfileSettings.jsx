@@ -4,6 +4,7 @@ import { Check, Eye, EyeOff } from 'react-feather';
 import { FiUser } from "react-icons/fi"; // For default user icon
 import axios from 'axios'; // For API calls
 import { useNavigate } from 'react-router-dom';
+import Notification from '../../components/Notification/Notification'; // Import the Notification component
 
 // --- IMPORTANT: Configure your API Base URL ---
 const API_BASE_URL = 'http://127.0.0.1:8000/api'; // Example: adjust if your backend is on a different port/domain
@@ -272,20 +273,9 @@ const ProfileSettings = () => {
                 <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Profile Settings</h1>
             </div>
 
-            {/* Success Message */}
-            {saveSuccessMessage && (
-                <div className="bg-green-600 text-white p-4 rounded-lg flex items-center space-x-2 mb-4 mt-6">
-                    <Check size={20} />
-                    <span>{saveSuccessMessage}</span>
-                </div>
-            )}
-
-            {/* Error Message */}
-            {errorMessage && (
-                <div className="bg-red-600 text-white p-4 rounded-lg flex items-center space-x-2 mb-4 mt-6">
-                    <span>Error: {errorMessage}</span>
-                </div>
-            )}
+            {/* Notification Components */}
+            {saveSuccessMessage && <Notification message={saveSuccessMessage} type="success" onClose={() => setSaveSuccessMessage("")} />}
+            {errorMessage && <Notification message={errorMessage} type="error" onClose={() => setErrorMessage("")} />}
 
             {/* Profile Image Section */}
             <div className={`shadow-md rounded-lg p-6 mt-6 flex items-center space-x-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>

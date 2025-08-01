@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { User, Mail, Phone, Check, XCircle, Trash2, Edit, Search, Calendar, MapPin, Building2 } from "lucide-react";
 // Assuming ThemeContext is available from your project structure
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
+import Notification from '../../components/Notification/Notification'; // Import the Notification component
 
 // Placeholder for ThemeContext if not available
 
@@ -279,7 +280,7 @@ const AddCustomer = () => {
       }));
     }
   };
-  
+
   // Handles changes in branch name or phone
   const handleBranchChange = (areaIndex, branchIndex, field, value) => {
     const newAreas = [...areas];
@@ -292,7 +293,7 @@ const AddCustomer = () => {
     }
     setAreas(newAreas);
   };
-  
+
   // Handles changes in area name input
   const handleAreaChange = (index, value) => {
     const newAreas = [...areas];
@@ -388,11 +389,6 @@ const AddCustomer = () => {
       setErrorMessage(error.message);
     } finally {
       setIsSubmitting(false);
-      // Clear messages after a few seconds
-      setTimeout(() => {
-        setSuccessMessage("");
-        setErrorMessage("");
-      }, 5000);
     }
   };
 
@@ -467,8 +463,7 @@ const AddCustomer = () => {
       console.error("Delete error:", error);
       setErrorMessage(error.message);
     } finally {
-      setTimeout(() => setSuccessMessage(""), 5000); // Clear message
-      setTimeout(() => setErrorMessage(""), 5000); // Clear message
+
     }
   };
 
@@ -485,6 +480,10 @@ const AddCustomer = () => {
 
   return (
     <div className={`p-6 space-y-8 min-h-screen ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
+      {/* Notification Component */}
+      {successMessage && <Notification message={successMessage} type="success" onClose={() => setSuccessMessage("")} />}
+      {errorMessage && <Notification message={errorMessage} type="error" onClose={() => setErrorMessage("")} />}
+
       {/* Page Header */}
       <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex flex-col md:flex-row justify-between items-center mb-6`}>
         <div>
@@ -502,21 +501,6 @@ const AddCustomer = () => {
           <Search size={20} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`} />
         </div>
       </div>
-
-      {/* Success and Error Messages */}
-      {successMessage && (
-        <div className="bg-green-600 text-white p-4 rounded-lg flex items-center space-x-2">
-          <Check size={20} />
-          <span>{successMessage}</span>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div className="bg-red-600 text-white p-4 rounded-lg flex items-start space-x-2">
-          <XCircle size={20} className="mt-1" />
-          <span className="whitespace-pre-line">{errorMessage}</span>
-        </div>
-      )}
 
       {/* Customer Form Section */}
       {!searchTerm && (

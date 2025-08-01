@@ -38,6 +38,21 @@ class UserController extends Controller
         return response()->json(User::all());
     }
 
+    // New method to get users with role 'technician'
+    public function getTechnicians()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized: You must be logged in to access this resource.'
+            ], 401);
+        }
+
+        $technicians = User::where('role', 'technician')->get();
+        return response()->json($technicians);
+    }
+
     /**
      * Store a newly created user in storage.
      *

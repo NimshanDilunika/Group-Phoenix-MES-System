@@ -63,21 +63,15 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+public function update(Request $request, string $id)
     {
         try {
-            \Log::info('Update Item Request Data:', $request->all()); // Log incoming request data
-
             $item = Item::findOrFail($id);
 
-            $validatedData = $request->validate([
-                'itemName' => 'required|string|max:255',
-                'icon' => 'nullable|string|max:255',
-            ]);
-
-            $item->name = $validatedData['itemName'];
-            // Do not update service_timeout to avoid saving modification time
-            $item->icon = $validatedData['icon'];
+            $item->name = $request['itemName'];
+            $item->service_timeout = $request['serviceTimeout'];
+            $item->icon = $request['icon'];
+            
             $item->save();
 
             return response()->json([
@@ -85,13 +79,11 @@ class ItemController extends Controller
                 'item' => $item
             ], 200); // 200 OK
         } catch (ValidationException $e) {
-            \Log::error('Validation Error on Item Update:', $e->errors()); // Log validation errors
             return response()->json([
                 'message' => 'Validation Error',
                 'errors' => $e->errors()
             ], 422); // 422 Unprocessable Entity
         } catch (\Exception $e) {
-            \Log::error('Exception on Item Update:', ['error' => $e->getMessage()]); // Log exception
             return response()->json([
                 'message' => 'An error occurred while updating the item.',
                 'error' => $e->getMessage()

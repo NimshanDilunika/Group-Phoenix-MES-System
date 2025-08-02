@@ -110,7 +110,7 @@ const UserCard = ({ user, isDarkMode, initiateRoleChange, initiateDeleteUser, us
 
 const AddUser = () => {
     const { isDarkMode } = useContext(ThemeContext);
-    const { userRole } = useAuth(); // Destructure userRole directly from the useAuth hook
+    const { userRole } = useAuth();
 
     const [formData, setFormData] = useState({
         fullname: "",
@@ -187,6 +187,18 @@ const AddUser = () => {
             ...prevData,
             [name]: value
         }));
+    };
+
+    // Refactored handlePhoneChange to explicitly validate and restrict input
+    const handlePhoneChange = (e) => {
+        const { name, value } = e.target;
+        // Allows only digits and limits length to 10
+        if (/^\d*$/.test(value) && value.length <= 10) {
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -448,12 +460,7 @@ const AddUser = () => {
                                     type="text"
                                     name="phoneno"
                                     value={formData.phoneno}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^\d{0,10}$/.test(value)) {
-                                            handleChange(e);
-                                        }
-                                    }}
+                                    onChange={handlePhoneChange}
                                     placeholder="Enter phone number"
                                     className={`bg-transparent border-none ${inputTextColor} ${placeholderColor} focus:outline-none w-full`}
                                 />

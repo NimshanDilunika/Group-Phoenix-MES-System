@@ -106,5 +106,6 @@ Route::put('/jobcards/{id}', [JobCardController::class, 'update']);
 Route::get('/jobcards/{id}', [JobCardController::class, 'show']);
 
 Route::get('/job-homes', [JobHomeController::class, 'index']);
+Route::get('/job-homes/{id}', [JobHomeController::class, 'show']);
 Route::post('/job-homes', [JobHomeController::class, 'store']);
 Route::put('/job-homes/{id}', [JobHomeController::class, 'update']);

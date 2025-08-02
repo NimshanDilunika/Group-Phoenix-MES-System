@@ -5,6 +5,7 @@ import { FiUser } from "react-icons/fi";
 import axios from 'axios';
 import { CompanySettingsContext } from '../../context/CompanySettingsContext';
 import Notification from '../../components/Notification/Notification'; // Import the Notification component
+import { useAuth } from '../hooks/useAuth';
 
 // Base URL for your Laravel API
 // IMPORTANT: Adjust this to your actual Laravel backend URL
@@ -27,7 +28,11 @@ const Settings = () => {
     const [isSaving, setIsSaving] = useState(false); // Loading state for save button
     const [saveSuccessMessage, setSaveSuccessMessage] = useState(""); // Success notification
     const [errorMessage, setErrorMessage] = useState(""); // Error notification
+    const { userRole, isLoading } = useAuth();
 
+    // Check if user is Administrator
+    const isAdmin = userRole === 'Administrator' || userRole === 'administrator' || userRole === 'admin';
+    
     // --- Data Fetching on Component Mount ---
     useEffect(() => {
         const fetchSettings = async () => {
@@ -54,15 +59,34 @@ const Settings = () => {
         fetchSettings();
     }, [setCompanyLogoUrl]); // Depend on setCompanyLogoUrl to prevent re-fetching on every render if it's unstable
 
-    const handleCompanyNameChange = (event) => setCompanyName(event.target.value);
-    const handleAccountNameChange = (event) => setAccountName(event.target.value);
-    const handleAccountNumberChange = (event) => setAccountNumber(event.target.value);
-    const handleBankNameChange = (event) => setBankName(event.target.value);
-    const handleBankBranchChange = (event) => setBankBranch(event.target.value);
-    const handleHeadOfTechnicalNameChange = (event) => setHeadOfTechnicalName(event.target.value);
-    const handleHeadOfTechnicalContactChange = (event) => setHeadOfTechnicalContact(event.target.value);
+    const handleCompanyNameChange = (event) => {
+        if (isAdmin) setCompanyName(event.target.value);
+    };
+    const handleAccountNameChange = (event) => {
+        if (isAdmin) setAccountName(event.target.value);
+    };
+    const handleAccountNumberChange = (event) => {
+        if (isAdmin) setAccountNumber(event.target.value);
+    };
+    const handleBankNameChange = (event) => {
+        if (isAdmin) setBankName(event.target.value);
+    };
+    const handleBankBranchChange = (event) => {
+        if (isAdmin) setBankBranch(event.target.value);
+    };
+    const handleHeadOfTechnicalNameChange = (event) => {
+        if (isAdmin) setHeadOfTechnicalName(event.target.value);
+    };
+    const handleHeadOfTechnicalContactChange = (event) => {
+        if (isAdmin) setHeadOfTechnicalContact(event.target.value);
+    };
 
     const handleSaveProfile = async () => {
+        if (!isAdmin) {
+            setErrorMessage("You don't have permission to save changes.");
+            return;
+        }
+
         setIsSaving(true);
         setSaveSuccessMessage(""); // Clear previous messages
         setErrorMessage("");
@@ -114,7 +138,6 @@ const Settings = () => {
             setSelectedFile(null);
             setIsImageRemoved(false);
 
-
         } catch (error) {
             console.error('Error saving profile:', error);
             if (error.response) {
@@ -146,6 +169,8 @@ const Settings = () => {
 
     // Handler for file input change
     const handleImageChange = (event) => {
+        if (!isAdmin) return;
+        
         const file = event.target.files[0];
         if (file) {
             setSelectedFile(file); // Store the actual file for FormData
@@ -159,23 +184,44 @@ const Settings = () => {
     };
 
     // Trigger hidden file input click
-    const handleUploadButtonClick = () => fileInputRef.current.click();
+    const handleUploadButtonClick = () => {
+        if (isAdmin) fileInputRef.current.click();
+    };
 
     // Handler for removing the image
     const handleRemoveImage = () => {
+        if (!isAdmin) return;
         setProfileImage(null); // Clear displayed image
         setSelectedFile(null); // No file to send
         setIsImageRemoved(true); // Signal backend to remove existing image
     };
 
+    // Show loading state while checking auth
+    if (isLoading) {
+        return (
+            <div className={`min-h-screen p-6 flex items-center justify-center transition-all ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}>
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="mt-4 text-lg">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        
         <div className={`min-h-screen p-6 transition-all ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}>
             <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
                 <div>
                     <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Company Settings</h1>
-                    <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Change Youre Company Details</p>
+                    <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {isAdmin ? 'Change Your Company Details' : 'View Company Details (Read Only)'}
+                    </p>
                 </div>
+                {!isAdmin && (
+                    <div className={`px-4 py-2 rounded-lg ${isDarkMode ? 'bg-yellow-900 text-yellow-200 border border-yellow-600' : 'bg-yellow-100 text-yellow-800 border border-yellow-300'}`}>
+                        <span className="text-sm font-medium">View Only Mode</span>
+                    </div>
+                )}
             </div>
             
             {/* Notification Components */}
@@ -198,19 +244,27 @@ const Settings = () => {
                                 <FiUser className="w-85 h-85 rounded-full text-gray-400" />
                             )}
                         </div>
-                        <div>
-                            <button onClick={handleUploadButtonClick} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition-all">
-                                Change Icon
-                            </button>
-                            {profileImage && ( // Show remove button only if an image is displayed
-                                <button onClick={handleRemoveImage} className="ml-3 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition-all">
-                                    Remove
+                        {isAdmin && (
+                            <div>
+                                <button 
+                                    onClick={handleUploadButtonClick} 
+                                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition-all"
+                                >
+                                    Change Icon
                                 </button>
-                            )}
-                            {/* Hidden file input */}
-                            <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" ref={fileInputRef} />
-                            <p className="text-sm dark:text-gray-400 mt-1">PNG or JPG (Max 2MB)</p>
-                        </div>
+                                {profileImage && ( // Show remove button only if an image is displayed
+                                    <button 
+                                        onClick={handleRemoveImage} 
+                                        className="ml-3 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition-all"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                                {/* Hidden file input */}
+                                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" ref={fileInputRef} />
+                                <p className="text-sm dark:text-gray-400 mt-1">PNG or JPG (Max 2MB)</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Company Name Section */}
@@ -224,10 +278,12 @@ const Settings = () => {
                                 id="companyName"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Change Company Name"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Change Company Name" : "Company Name (Read Only)"}
                                 value={companyName}
                                 onChange={handleCompanyNameChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                     </div>
@@ -245,10 +301,12 @@ const Settings = () => {
                                 id="accountName"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Enter Account Name"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Enter Account Name" : "Account Name (Read Only)"}
                                 value={accountName}
                                 onChange={handleAccountNameChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                         <div className="mb-4">
@@ -260,10 +318,12 @@ const Settings = () => {
                                 id="accountNumber"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Enter Account Number"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Enter Account Number" : "Account Number (Read Only)"}
                                 value={accountNumber}
                                 onChange={handleAccountNumberChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                         <div className="mb-4">
@@ -275,10 +335,12 @@ const Settings = () => {
                                 id="bankName"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Enter Bank Name"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Enter Bank Name" : "Bank Name (Read Only)"}
                                 value={bankName}
                                 onChange={handleBankNameChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                         <div className="mb-4">
@@ -290,10 +352,12 @@ const Settings = () => {
                                 id="bankBranch"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Enter Bank Branch"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Enter Bank Branch" : "Bank Branch (Read Only)"}
                                 value={bankBranch}
                                 onChange={handleBankBranchChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                     </div>
@@ -309,10 +373,12 @@ const Settings = () => {
                                 id="headOfTechnicalName"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Enter Head of Technical Name"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Enter Head of Technical Name" : "Head of Technical Name (Read Only)"}
                                 value={headOfTechnicalName}
                                 onChange={handleHeadOfTechnicalNameChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                         <div className="mb-4">
@@ -324,23 +390,28 @@ const Settings = () => {
                                 id="headOfTechnicalContact"
                                 className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${
                                     isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'
-                                }`}
-                                placeholder="Enter Head of Technical Contact"
+                                } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                placeholder={isAdmin ? "Enter Head of Technical Contact" : "Head of Technical Contact (Read Only)"}
                                 value={headOfTechnicalContact}
                                 onChange={handleHeadOfTechnicalContactChange}
+                                readOnly={!isAdmin}
+                                disabled={!isAdmin}
                             />
                         </div>
                     </div>
-                    {/* Save Button */}
-                    <div className="flex justify-end">
-                        <button
-                            onClick={handleSaveProfile}
-                            className={`px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-colors mt-6 ${isSaving ? 'opacity-75 cursor-wait' : ''}`}
-                            disabled={isSaving}
-                        >
-                            {isSaving ? 'Saving Changes...' : 'Save Changes'}
-                        </button>
-                    </div>
+                    
+                    {/* Save Button - Only show for Admins */}
+                    {isAdmin && (
+                        <div className="flex justify-end">
+                            <button
+                                onClick={handleSaveProfile}
+                                className={`px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-colors mt-6 ${isSaving ? 'opacity-75 cursor-wait' : ''}`}
+                                disabled={isSaving}
+                            >
+                                {isSaving ? 'Saving Changes...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

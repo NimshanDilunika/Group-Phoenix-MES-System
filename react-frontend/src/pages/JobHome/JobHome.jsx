@@ -12,12 +12,33 @@ import Quotation from "../../components/DocumentsLevel/Qutation/Quatation";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
-import { UserPlus,CircleX} from "lucide-react";
+import { UserPlus, CircleX } from "lucide-react";
 
-// Import the components we want to integrate
 import CancelJobPage from "./CancelJobPage";
 import ImageUpload from "./ImageUpload";
 import PaymentPage from "./Payment";
+
+const MessagePage = ({ onClose }) => {
+  const { isDarkMode } = useContext(ThemeContext);
+  return (
+    <div className={`min-h-[50vh] flex items-center justify-center p-4 ${isDarkMode ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"}`}>
+      <div className={`p-6 rounded-lg w-full`}>
+        <h2 className="text-2xl font-bold mb-4 text-center">Message Center</h2>
+        <p className="text-center mb-6">
+          This is a placeholder for the Message functionality. You can integrate your messaging component here.
+        </p>
+        <div className="flex justify-center">
+          <button
+            onClick={onClose}
+            className="py-2 px-6 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+          >
+            Close Messages
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const JobHome = ({ onGoBack, job }) => {
   const [jobData, setJobData] = useState(null);
@@ -29,10 +50,10 @@ const JobHome = ({ onGoBack, job }) => {
   const isCreated = useRef(false);
   const jobType = job?.service || "Repair";
 
-  // State for showing/hiding the integrated components
   const [showCancelJob, setShowCancelJob] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
 
   const [confirmToggle, setConfirmToggle] = useState({
     show: false,
@@ -102,7 +123,6 @@ const JobHome = ({ onGoBack, job }) => {
       }
     } catch (err) {
       console.error(`Failed to update ${field}`, err);
-      alert(`Failed to update ${field.replace(/_/g, " ")}. Please try again.`);
       setJobData(prev => ({
         ...prev,
         job_home: {
@@ -133,7 +153,6 @@ const JobHome = ({ onGoBack, job }) => {
   );
 
   const buttonBaseClasses = `py-2 px-5 rounded-lg shadow-md transition-all duration-300 flex items-center gap-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2`;
-  const primaryButtonClasses = `${isDarkMode ? "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 focus:ring-offset-gray-900" : "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 focus:ring-offset-gray-100"}`;
   const neutralButtonClasses = `${isDarkMode ? "bg-gray-700 hover:bg-gray-600 text-gray-200 focus:ring-gray-500 focus:ring-offset-gray-900" : "bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-300 focus:ring-offset-gray-100"}`;
   const destructiveButtonClasses = `${isDarkMode ? "bg-red-700 hover:bg-red-800 text-white focus:ring-red-500 focus:ring-offset-gray-900" : "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 focus:ring-offset-gray-100"}`;
   const tabButtonClasses = (isActive) => `w-full py-3 px-8 rounded-lg transition-all duration-300 text-lg font-semibold flex items-center justify-center gap-2 ${isActive ? "bg-blue-600 text-white shadow-lg" : isDarkMode ? "bg-transparent text-gray-300 border border-gray-700 hover:bg-gray-700 hover:text-white" : "bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-100"}`;
@@ -162,63 +181,71 @@ const JobHome = ({ onGoBack, job }) => {
       <div className={`flex flex-col items-center justify-center min-h-screen ${isDarkMode ? "bg-gray-900 text-red-400" : "bg-red-100 text-red-800"}`}>
         <FaExclamationTriangle className="text-5xl mb-4" />
         <p className="text-xl font-semibold">{error}</p>
-        <button onClick={onGoBack} className={`${primaryButtonClasses} mt-6 ${buttonBaseClasses}`}>
+        <button onClick={onGoBack} className={`bg-blue-600 hover:bg-blue-700 text-white ${buttonBaseClasses} mt-6`}>
           <FaArrowLeft /> Go Back
         </button>
       </div>
     );
   }
 
-  // If any of the integrated components are shown, render them instead of the main page
-  if (showCancelJob || showImageUpload || showPayment) {
+  // ✅ PROFESSIONAL MODAL DESIGN
+  if (showCancelJob || showImageUpload || showPayment || showMessages) {
     return (
-      <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
-        {showCancelJob && (
-          <div className="relative">
-            <button 
-              onClick={() => setShowCancelJob(false)}
-              className="absolute top-4 right-4 z-50 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
+      
+      <div
+        className={`fixed inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm ${
+        isDarkMode ? "bg-gray-900/80" : "bg-white/80"
+      }`}
+      >
+        <div
+          className={`relative w-full max-w-3xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden ${
+            isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+          }`}
+        >
+          {/* HEADER BAR */}
+          <div
+            className={`flex justify-between items-center px-6 py-4 border-b ${
+              isDarkMode ? "border-gray-700" : "border-gray-200"
+            }`}
+          >
+            <h2 className="text-xl font-semibold">
+              {showCancelJob && "Cancel Job"}
+              {showImageUpload && "Upload Images"}
+              {showPayment && "Payment Details"}
+              {showMessages && "Messages"}
+            </h2>
+            <button
+              onClick={() => {
+                setShowCancelJob(false);
+                setShowImageUpload(false);
+                setShowPayment(false);
+                setShowMessages(false);
+              }}
+              className="text-gray-400 hover:text-red-500 transition"
             >
-              <FaTimes size={20} />
+              <FaTimes size={22} />
             </button>
-            <div className="pt-16">
-              <CancelJobPage jobs={[jobData?.job_home]} jobId={jobData?.job_home?.id} />
-            </div>
           </div>
-        )}
-        {showImageUpload && (
-          <div className="relative">
-            <button 
-              onClick={() => setShowImageUpload(false)}
-              className="absolute top-4 right-4 z-50 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
-            >
-              <FaTimes size={20} />
-            </button>
-            <div className="pt-16">
-              <ImageUpload />
-            </div>
+
+          {/* CONTENT AREA */}
+          <div className="p-6 overflow-y-auto max-h-[75vh]">
+            {showCancelJob && <CancelJobPage jobs={[jobData?.job_home]} jobId={jobData?.job_home?.id} />}
+            {showImageUpload && <ImageUpload />}
+            {showPayment && <PaymentPage />}
+            {showMessages && <MessagePage onClose={() => setShowMessages(false)} />}
           </div>
-        )}
-        {showPayment && (
-          <div className="relative">
-            <button 
-              onClick={() => setShowPayment(false)}
-              className="absolute top-4 right-4 z-50 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
-            >
-              <FaTimes size={20} />
-            </button>
-            <div className="pt-16">
-              <PaymentPage />
-            </div>
-          </div>
-        )}
+          
+        </div>
+        
       </div>
+      
     );
   }
 
   return (
     <div className={`min-h-screen py-10 px-4 sm:px-6 lg:px-8 ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       <div className="mx-auto">
+        {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-gray-200 dark:border-gray-700">
           <button className={`${neutralButtonClasses} ${buttonBaseClasses} mb-6 md:mb-0 mr-4`} onClick={onGoBack}>
             <FaArrowLeft className="text-base" /> Back to Jobs
@@ -240,7 +267,9 @@ const JobHome = ({ onGoBack, job }) => {
           <ProgressBar currentStatus={currentJobStatus} isDarkMode={isDarkMode} />
         </div>
 
+        {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 mt-10">
+          {/* LEFT SIDE */}
           <div className="lg:col-span-8">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               <button onClick={() => setSelectedComponent("JobCard")} className={tabButtonClasses(selectedComponent === "JobCard")}><FaTools className="text-xl" /> Job Card</button>
@@ -256,7 +285,9 @@ const JobHome = ({ onGoBack, job }) => {
             </div>
           </div>
 
+          {/* RIGHT SIDE */}
           <div className="lg:col-span-2">
+            {/* TOGGLES */}
             <div className="mt-8 p-4 rounded-xl border shadow-inner border-gray-500 dark:border-gray-200">
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>Job Status Toggles</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
@@ -267,23 +298,22 @@ const JobHome = ({ onGoBack, job }) => {
               </div>
             </div>
 
+            {/* ACTIONS */}
             <div className="mt-8 p-4 rounded-xl border shadow-inner border-gray-500 dark:border-gray-200">
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>Actions</h3>
               <div className="flex flex-wrap justify-center gap-3">
-                <button 
-                  onClick={() => setShowImageUpload(true)}
-                  className={`${neutralButtonClasses} ${buttonBaseClasses}`}
-                >
+                <button onClick={() => setShowImageUpload(true)} className={`${neutralButtonClasses} ${buttonBaseClasses}`}>
                   <FaImage className="text-lg" /> Images
                 </button>
-                <button className={`${neutralButtonClasses} ${buttonBaseClasses}`}><FaEnvelope className="text-lg" /> Message</button>
-                <button 
-                  onClick={() => setShowPayment(true)}
-                  className={`${neutralButtonClasses} ${buttonBaseClasses}`}
-                >
+                <button onClick={() => setShowMessages(true)} className={`${neutralButtonClasses} ${buttonBaseClasses}`}>
+                  <FaEnvelope className="text-lg" /> Message
+                </button>
+                <button onClick={() => setShowPayment(true)} className={`${neutralButtonClasses} ${buttonBaseClasses}`}>
                   <FaMoneyBillWave className="text-lg" /> Payment
                 </button>
               </div>
+
+              {/* ASSIGN TECHNICIAN */}
               <div className="mt-6">
                 <Link to="#" className="no-underline">
                   <button className={`bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg ${buttonBaseClasses} w-full`}>
@@ -293,13 +323,11 @@ const JobHome = ({ onGoBack, job }) => {
               </div>
             </div>
 
+            {/* CANCEL JOB */}
             <div className="mt-8 p-4 rounded-xl border shadow-inner border-gray-500 dark:border-gray-200">
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>Cancel Job</h3>
               <div className="mt-6">
-                <button 
-                  onClick={() => setShowCancelJob(true)}
-                  className={`${destructiveButtonClasses} ${buttonBaseClasses} w-full`}
-                >
+                <button onClick={() => setShowCancelJob(true)} className={`${destructiveButtonClasses} ${buttonBaseClasses} w-full`}>
                   <CircleX className="text-lg mr-2" /> Cancel Job
                 </button>
               </div>
@@ -308,7 +336,7 @@ const JobHome = ({ onGoBack, job }) => {
         </div>
       </div>
 
-      {/* Use ConfirmationModal component */}
+      {/* CONFIRMATION MODAL */}
       <ConfirmationModal
         show={confirmToggle.show}
         title="Confirm Action"
@@ -318,6 +346,7 @@ const JobHome = ({ onGoBack, job }) => {
         isDarkMode={isDarkMode}
       />
     </div>
+    
   );
 };
 

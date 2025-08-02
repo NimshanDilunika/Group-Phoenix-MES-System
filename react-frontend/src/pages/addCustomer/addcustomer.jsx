@@ -3,6 +3,7 @@ import { User, Mail, Phone, Check, XCircle, Trash2, Edit, Search, Calendar, MapP
 // Assuming ThemeContext is available from your project structure
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import Notification from '../../components/Notification/Notification'; // Import the Notification component
+import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 
 // Placeholder for ThemeContext if not available
 
@@ -142,7 +143,7 @@ const AddCustomer = () => {
   const [editingCustomerId, setEditingCustomerId] = useState(null);
   // Removed isEditing state as areas and branches section should always be visible
 
-  // States for the custom delete confirmation modal
+  // States for the delete confirmation modal
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [customerToDelete, setCustomerToDelete] = useState(null);
 
@@ -776,29 +777,15 @@ const AddCustomer = () => {
         )}
       </div>
 
-      {/* Custom Delete Confirmation Modal */}
-      {showDeleteConfirmModal && (
-        <div className="fixed inset-0 bg-blue-200/5 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className={`${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} rounded-lg shadow-xl p-6 max-w-sm w-full space-y-4`}>
-            <h3 className="text-lg font-bold">Confirm Deletion</h3>
-            <p>Are you sure you want to delete customer "<strong>{customerToDelete?.customer_name}</strong>"? This action cannot be undone.</p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={cancelDelete}
-                className={`px-4 py-2 rounded-md border ${isDarkMode? "bg-gray-800 hover:bg-gray-600 border-gray-300 text-white": "bg-white hover:bg-gray-300 border-gray-300 text-black"} transition-colors`}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
-              >
-                Conform
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        show={showDeleteConfirmModal}
+        title="Confirm Deletion"
+        message={`Are you sure you want to delete customer "${customerToDelete?.customer_name}"? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };

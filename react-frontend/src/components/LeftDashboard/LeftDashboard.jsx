@@ -73,10 +73,7 @@ const LeftDashboard = () => {
       [{ icon: <FiUser className="text-xl" />, name: "Add Customer", path: "/dashboard/addcustomer" }] : []
     ),
 
-    // Settings: Display only if userRole is 'Administrator'.
-    ...(userRole === 'Administrator' ?
-      [{ icon: <AiOutlineSetting className="text-xl" />, name: "Settings", path: "/dashboard/settings" }] : []
-    ),
+    {icon: <AiOutlineSetting className="text-xl" />, name: "Settings", path: "/dashboard/settings" }
   ];
 
   return (

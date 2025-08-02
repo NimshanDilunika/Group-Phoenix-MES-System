@@ -3,13 +3,34 @@ import { FaCalendarAlt, FaTrash, FaEdit, FaDownload, FaPrint, FaCheck,FaInfoCirc
 import { ThemeContext } from "../../ThemeContext/ThemeContext";
 //import jsPDF from "jsPDF";
 import axios from "axios"; // Ensure axios is imported for data fetching
-import Notification from '../../Notification/Notification'; 
+import Notification from '../../Notification/Notification';
+import { useAuth } from '../../../pages/hooks/useAuth';
 
 const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
   const { isDarkMode } = useContext(ThemeContext);
   const [jobCardId, setJobCardId] = useState(initialJobCardId || null);
-  const [isEditing, setIsEditing] = useState(!initialJobCardId);
+  const [isEditing, setIsEditing] = useState(false); // Start in view mode
   const [selectedDate, setSelectedDate] = useState(""); // Initialize with empty string, will be set on fetch or current date
+  const { userRole, isLoading } = useAuth();
+  
+  // Check if user has permission to edit job cards
+  const canEditJobCards = userRole === 'Administrator' || userRole === 'Tecnical_Head' || userRole === 'Manager';
+  // For technicians, they can create new job cards but not edit existing ones
+  const canCreateJobCards = userRole === 'Administrator' || userRole === 'Tecnical_Head' || userRole === 'Manager';
+  
+  // Set initial editing state based on user role and whether this is a new job card
+  useEffect(() => {
+    if (!isLoading) {
+      // If this is a new job card and user can create job cards, enable editing
+      if (!initialJobCardId && canCreateJobCards) {
+        setIsEditing(true);
+      }
+      // If this is an existing job card and user can edit job cards, allow editing after fetch
+      else if (initialJobCardId && canEditJobCards) {
+        // Will be set to false after fetching data, user can click edit button
+      }
+    }
+  }, [isLoading, initialJobCardId, canCreateJobCards, canEditJobCards]);
 
   const [fields, setFields] = useState({
     customer_name: "", fam_no: "", contact_person: "", area: "",
@@ -67,6 +88,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
 
   // --- Handlers ---
   const handleFieldChange = (e) => {
+    if (!isEditing) return; // Prevent changes if not in editing mode
     const { name, value } = e.target;
     setFields({ ...fields, [name]: value });
 
@@ -77,6 +99,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
   };
 
   const handleFilterChange = (e) => {
+    if (!isEditing) return; // Prevent changes if not in editing mode
     const { name, type, checked, value } = e.target;
     setFilters((prev) => ({
       ...prev,
@@ -104,6 +127,12 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
 
   const handleSubmit = async () => {
     if (!isEditing) return;
+    
+    // Additional check for user permissions
+    if (!canCreateJobCards && !canEditJobCards) {
+      showNotification("You don't have permission to submit job cards.", "error");
+      return;
+    }
 
     // Filter out empty items before sending
     const filteredItems = items.filter(item =>
@@ -170,7 +199,11 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
   };
 
   const handleEdit = () => {
-    setIsEditing(true);
+    if (canEditJobCards) {
+      setIsEditing(true);
+    } else {
+      showNotification("You don't have permission to edit job cards.", "error");
+    }
   };
 
   // --- Data Fetching Effects ---
@@ -251,7 +284,8 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
             setItems([{ materialsNo: "", materials: "", quantity: "" }]);
           }
 
-          setIsEditing(false); // After fetching, default to not editing
+          // After fetching, default to not editing unless user has permission
+          setIsEditing(false);
         } catch (error) {
           console.error("Error fetching job card data:", error);
           showNotification("Failed to fetch job card data.", "error");
@@ -504,16 +538,19 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
         <h2 className={`text-4xl font-extrabold tracking-tight ${isDarkMode ? 'text-blue-400' : 'text-blue-700'} `}>
           Job Card
         </h2>
+         
         <div className="flex space-x-4">
-          {jobCardId && !isEditing && (
-            <button
-              onClick={handleEdit}
-              className={`px-6 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-yellow-600 hover:bg-yellow-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}`}
-            >
-              <FaEdit className="mr-3 text-lg" /> Edit
-            </button>
-          )}
-
+          {
+            userRole !== 'Technician' && jobCardId && !isEditing && (
+              <button
+                onClick={handleEdit}
+                className={`px-6 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-yellow-600 hover:bg-yellow-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}`}
+              >
+                <FaEdit className="mr-3 text-lg" /> Edit
+              </button>
+            )
+          }  
+          
           {jobCardId && (
             <>
               <button

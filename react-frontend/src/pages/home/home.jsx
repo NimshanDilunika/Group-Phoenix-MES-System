@@ -66,6 +66,12 @@ const Home = () => {
     const [items, setItems] = useState([]); // State to store fetched items
     const [itemsLoading, setItemsLoading] = useState(true); // Loading state for items
     const [itemsError, setItemsError] = useState(null); // Error state for items
+    const [jobs, setJobs] = useState([]);
+
+    
+
+    //const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+
 
     const { isAuthenticated, userRole, isLoading } = useAuth();
     // --- NEW STATE FOR DROPDOWN ---
@@ -73,13 +79,31 @@ const Home = () => {
     // --- END NEW STATE ---
 
     // Sample Job Data (your existing data - consider fetching this from backend too!)
-    const jobs = [
-        { id: 61, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 31, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
-        { id: 32, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
+    // const jobs = [
+    //     { id: 61, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
+    //     { id: 31, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
+    //     { id: 32, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
         
-    ];
+    // ];
 
+    useEffect(() => {
+        axios.get("http://127.0.0.1:8000/api/job-homes")
+        .then(response => {
+            const formattedJobs = response.data.map(job => ({
+            id: job.id,
+            title: job.job_type || "Untitled Job",
+            company: job.customer?.name || "Unknown Company",
+            date: job.created_at ? new Date(job.created_at).toLocaleDateString() : "N/A",
+            status: job.job_status ? job.job_status.trim() : "",
+            service: job.job_type,
+            }));
+            setJobs(formattedJobs);
+            //setFilteredJobs(formattedJobs); // Or apply filters here
+        })
+        .catch(error => {
+            console.error("Error fetching jobs:", error);
+        });
+    }, []);
     useEffect(() => {
         const fetchItems = async () => {
             try {
@@ -146,15 +170,16 @@ const Home = () => {
     const [selectedStatus, setSelectedStatus] = useState(null);
 
     const filteredJobs = jobs.filter(job => {
-        const matchesService = selectedService ? job.service === selectedService : true;
-        const matchesStatus = selectedStatus ? job.status === selectedStatus : true;
-        return matchesService && matchesStatus;
+    const matchesService = selectedService ? job.service === selectedService : true;
+    const matchesStatus = selectedStatus ? job.status === selectedStatus : true;
+    return matchesService && matchesStatus;
     });
 
+    const indexOfLastJob = currentPage * jobsPerPage;
+    const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+    const displayedJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+
     const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-    const startIndex = (currentPage - 1) * jobsPerPage;
-    const endIndex = startIndex + jobsPerPage;
-    const displayedJobs = filteredJobs.slice(startIndex, endIndex);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -197,17 +222,37 @@ const Home = () => {
         setCurrentPage(1);
     };
 
-    const handleJobClick = (job) => {
-        setSelectedJob(job);
+const handleJobClick = (job) => {
+        setSelectedJob({...job, job_home_id: job.id});
     };
 
     // --- MODIFIED handleCreateJobCardClick ---
     // Now accepts an optional 'serviceName' argument
     const handleCreateJobCardClick = (serviceName = null) => {
-        // Pass an object with the service to JobHome.
-        // JobHome will need to be updated to receive and use this prop.
+        if (selectedJob && selectedJob.service === serviceName) {
+        // If a job is already selected, don't trigger new job creation
+        console.log('A job is already selected. Please deselect it to create a new job.');
+        return;
+    }
+    // Set selected job (for UI/state use)
         setSelectedJob({ service: serviceName });
-        setIsDropdownOpen(false); // Close dropdown after selection
+
+        // Close dropdown after selection
+        setIsDropdownOpen(false);
+
+        // Create new JobHome in Laravel backend
+        axios.post("http://127.0.0.1:8000/api/job-homes", {
+            job_type: serviceName,
+            customer_id: 1, // Replace with actual selected customer ID
+            job_status: `Pending - ${serviceName}`
+        })
+        .then(response => {
+            console.log('JobHome created:', response.data.job_home);
+            // You can redirect, refresh list, show success toast, etc.
+        })
+        .catch(error => {
+            console.error('Error creating JobHome:', error.response?.data || error.message);
+        });
     };
     // --- END MODIFIED handleCreateJobCardClick ---
 
@@ -383,8 +428,9 @@ const Home = () => {
             {displayedJobs.length > 0 ? (
                 <div className={`job-list space-y-4 ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}>
                     {displayedJobs.map(job => {
-                        const CurrentStatusIcon = StatusIcons[job.status]; // Get icon component dynamically
-                        const iconColorClass = StatusIconColors[job.status]; // Get color class dynamically
+                        const trimmedStatus = job.status ? job.status.trim() : "";
+                        const CurrentStatusIcon = StatusIcons[trimmedStatus]; // Get icon component dynamically
+                        const iconColorClass = StatusIconColors[trimmedStatus]; // Get color class dynamically
 
                         return (
                             <div

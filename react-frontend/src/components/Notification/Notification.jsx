@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from 'react';
 
 const Notification = ({ message = '', type = 'success', onClose, duration = 5000 }) => {
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (!message) return;
+        // Only run if there is a message
+        if (message) {
+            // Reset visibility to true when a new message arrives
+            setIsVisible(true);
 
-        const timer = setTimeout(() => {
+            // Set a timer to hide the notification
+            const timer = setTimeout(() => {
+                setIsVisible(false);
+                onClose?.();
+            }, duration);
+
+            // Cleanup function to clear the timer
+            return () => clearTimeout(timer);
+        } else {
+            // If the message is empty, ensure the notification is not visible
             setIsVisible(false);
-            onClose?.();
-        }, duration);
-
-        return () => clearTimeout(timer);
+        }
     }, [message, onClose, duration]);
 
+    // Do not render if not visible or no message
     if (!isVisible || !message) return null;
 
     const typeClasses = {
@@ -66,6 +76,15 @@ const Notification = ({ message = '', type = 'success', onClose, duration = 5000
                 @keyframes progressBar {
                     from { width: 100%; }
                     to { width: 0%; }
+                }
+
+                @keyframes slide-in {
+                    from { transform: translateX(100%); }
+                    to { transform: translateX(0); }
+                }
+
+                .animate-slide-in {
+                    animation: slide-in 0.3s ease-out forwards;
                 }
             `}</style>
         </div>

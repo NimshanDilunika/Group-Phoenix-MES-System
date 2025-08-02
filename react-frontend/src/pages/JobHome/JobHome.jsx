@@ -6,12 +6,18 @@ import {
   FaTools, FaFileInvoiceDollar, FaQuoteRight,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import JobCard from "../../components/DocumentsLevel/JobCard/JocCard";
+import JobCard from "../../components/DocumentsLevel/JobCard/JobCard";
 import Invoice from "../../components/DocumentsLevel/Invoice/Invoice";
 import Quotation from "../../components/DocumentsLevel/Qutation/Quatation";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
+import { UserPlus,CircleX} from "lucide-react";
+
+// Import the components we want to integrate
+import CancelJobPage from "./CancelJobPage";
+import ImageUpload from "./ImageUpload";
+import PaymentPage from "./Payment";
 
 const JobHome = ({ onGoBack, job }) => {
   const [jobData, setJobData] = useState(null);
@@ -22,6 +28,11 @@ const JobHome = ({ onGoBack, job }) => {
   const { isDarkMode } = useContext(ThemeContext);
   const isCreated = useRef(false);
   const jobType = job?.service || "Repair";
+
+  // State for showing/hiding the integrated components
+  const [showCancelJob, setShowCancelJob] = useState(false);
+  const [showImageUpload, setShowImageUpload] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   const [confirmToggle, setConfirmToggle] = useState({
     show: false,
@@ -158,6 +169,53 @@ const JobHome = ({ onGoBack, job }) => {
     );
   }
 
+  // If any of the integrated components are shown, render them instead of the main page
+  if (showCancelJob || showImageUpload || showPayment) {
+    return (
+      <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
+        {showCancelJob && (
+          <div className="relative">
+            <button 
+              onClick={() => setShowCancelJob(false)}
+              className="absolute top-4 right-4 z-50 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
+            >
+              <FaTimes size={20} />
+            </button>
+            <div className="pt-16">
+              <CancelJobPage jobs={[jobData?.job_home]} jobId={jobData?.job_home?.id} />
+            </div>
+          </div>
+        )}
+        {showImageUpload && (
+          <div className="relative">
+            <button 
+              onClick={() => setShowImageUpload(false)}
+              className="absolute top-4 right-4 z-50 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
+            >
+              <FaTimes size={20} />
+            </button>
+            <div className="pt-16">
+              <ImageUpload />
+            </div>
+          </div>
+        )}
+        {showPayment && (
+          <div className="relative">
+            <button 
+              onClick={() => setShowPayment(false)}
+              className="absolute top-4 right-4 z-50 bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
+            >
+              <FaTimes size={20} />
+            </button>
+            <div className="pt-16">
+              <PaymentPage />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen py-10 px-4 sm:px-6 lg:px-8 ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       <div className="mx-auto">
@@ -212,14 +270,24 @@ const JobHome = ({ onGoBack, job }) => {
             <div className="mt-8 p-4 rounded-xl border shadow-inner border-gray-500 dark:border-gray-200">
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>Actions</h3>
               <div className="flex flex-wrap justify-center gap-3">
-                <button className={`${neutralButtonClasses} ${buttonBaseClasses}`}><FaImage className="text-lg" /> Images</button>
+                <button 
+                  onClick={() => setShowImageUpload(true)}
+                  className={`${neutralButtonClasses} ${buttonBaseClasses}`}
+                >
+                  <FaImage className="text-lg" /> Images
+                </button>
                 <button className={`${neutralButtonClasses} ${buttonBaseClasses}`}><FaEnvelope className="text-lg" /> Message</button>
-                <button className={`${neutralButtonClasses} ${buttonBaseClasses}`}><FaMoneyBillWave className="text-lg" /> Payment</button>
+                <button 
+                  onClick={() => setShowPayment(true)}
+                  className={`${neutralButtonClasses} ${buttonBaseClasses}`}
+                >
+                  <FaMoneyBillWave className="text-lg" /> Payment
+                </button>
               </div>
               <div className="mt-6">
-                <Link to="/" className="no-underline">
+                <Link to="#" className="no-underline">
                   <button className={`bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg ${buttonBaseClasses} w-full`}>
-                    <FaTimes className="text-lg mr-2" /> Assign Technician
+                    <UserPlus className="text-lg mr-2" /> Assign Technician
                   </button>
                 </Link>
               </div>
@@ -228,11 +296,12 @@ const JobHome = ({ onGoBack, job }) => {
             <div className="mt-8 p-4 rounded-xl border shadow-inner border-gray-500 dark:border-gray-200">
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>Cancel Job</h3>
               <div className="mt-6">
-                <Link to="/cancel" className="no-underline">
-                  <button className={`${destructiveButtonClasses} ${buttonBaseClasses} w-full`}>
-                    <FaTimes className="text-lg mr-2" /> Cancel Job
-                  </button>
-                </Link>
+                <button 
+                  onClick={() => setShowCancelJob(true)}
+                  className={`${destructiveButtonClasses} ${buttonBaseClasses} w-full`}
+                >
+                  <CircleX className="text-lg mr-2" /> Cancel Job
+                </button>
               </div>
             </div>
           </div>

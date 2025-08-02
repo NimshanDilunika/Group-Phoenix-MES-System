@@ -191,7 +191,9 @@ class JobCardController extends Controller
 
     public function show($id)
     {
-        $jobCard = JobCard::with('jobHome', 'items')->findOrFail($id);
+        $jobCard = JobCard::with('jobHome')->findOrFail($id);
+        // Manually fetch items since the relationship might be incorrect
+        $jobCard->setRelation('items', JobItem::where('job_home_id', $jobCard->job_home_id)->get());
         return response()->json($jobCard);
     }
 }

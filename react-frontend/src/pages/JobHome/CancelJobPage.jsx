@@ -44,7 +44,7 @@ const CancelJobPage = ({ jobs }) => {
     };
 
     return (
-        <div className={`min-h-screen transition-colors duration-300 ${
+        <div className={` transition-colors duration-300 ${
             isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
         }`}>
             <div className="flex flex-col items-center justify-center p-6 flex-grow">

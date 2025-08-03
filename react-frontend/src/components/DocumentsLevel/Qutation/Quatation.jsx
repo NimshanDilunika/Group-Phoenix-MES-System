@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { FaCalendarAlt, FaTrash, FaDownload,FaInfoCircle, FaPrint, FaCheck, FaEdit, FaChevronDown, FaChevronUp } from "react-icons/fa"; // Added chevron icons
 import { ThemeContext } from "../../ThemeContext/ThemeContext";
 import Notification from '../../Notification/Notification'; 
+import { useAuth } from "../../../pages/hooks/useAuth";
 
 const Quotation = () => {
     const { isDarkMode } = useContext(ThemeContext);
@@ -13,9 +14,11 @@ const Quotation = () => {
     // State for managing expanded/collapsed sections
     const [isQuotationInfoExpanded, setIsQuotationInfoExpanded] = useState(false);
     const [isTenderInfoExpanded, setIsTenderInfoExpanded] = useState(false);
-    const [isItemsTableExpanded, setIsItemsTableExpanded] = useState(false); // Added for items table
+    const [isItemsTableExpanded, setIsItemsTableExpanded] = useState(true); // Added for items table  
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
     const [isSpecialNoteExpanded, setIsSpecialNoteExpanded] = useState(false);
+    // Destructure all relevant states from the useAuth hook, including isLoading and isAuthenticated
+    const { isAuthenticated, userRole } = useAuth();
 
     const [fields, setFields] = useState({
         attention: "",
@@ -186,57 +189,125 @@ const Quotation = () => {
             </div>
 
             {/* Quotation Details Section */}
-            <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+            {(userRole === 'Administrator' || userRole === 'Tecnical_Head') && (
+                <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
                 <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsQuotationInfoExpanded(!isQuotationInfoExpanded)}>
-                    <h3
-                      className={`text-2xl font-semibold ${
-                        isDarkMode ? "text-gray-200" : "text-gray-700"
-                      } flex items-center`}
-                    >
-                      <FaInfoCircle className="mr-2 text-blue-400" /> Quotation Information
+                    <h3 className={`text-2xl font-semibold ${isDarkMode ? "text-gray-200" : "text-gray-700"} flex items-center`}>
+                    <FaInfoCircle className="mr-2 text-blue-400" /> Quotation Information
                     </h3>
                     {isQuotationInfoExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
                 </div>
 
                 {isQuotationInfoExpanded && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Attention */}
-                        <div className="col-span-full md:col-span-1">
-                            <label htmlFor="attention" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Attention:</label>
-                            <textarea
-                                id="attention"
-                                name="attention"
-                                value={fields.attention}
-                                onChange={handleFieldChange}
-                                readOnly={!isEditing}
-                                rows="4"
-                                className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                            />
+                    {/* Attention */}
+                    <div className="col-span-full md:col-span-1">
+                        <label htmlFor="attention" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Attention:</label>
+                        <textarea
+                        id="attention"
+                        name="attention"
+                        value={fields.attention}
+                        onChange={handleFieldChange}
+                        readOnly={!isEditing}
+                        rows="4"
+                        className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                        />
+                    </div>
+
+                    <div className="col-span-full md:col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Quotation No */}
+                        <div>
+                        <label htmlFor="quotation_no" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Quotation No:</label>
+                        <input
+                            type="text"
+                            id="quotation_no"
+                            name="quotation_no"
+                            value={fields.quotation_no}
+                            onChange={handleFieldChange}
+                            readOnly={!isEditing}
+                            className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                        />
                         </div>
 
-                        <div className="col-span-full md:col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Quotation No */}
+                        {/* Selected Date */}
+                        <div className="flex items-center">
+                        <label className={`font-medium text-sm mr-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date:</label>
+                        <div className="relative flex items-center flex-grow">
+                            <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => isEditing && setSelectedDate(e.target.value)}
+                            readOnly={!isEditing}
+                            className={`px-5 py-3 rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                            />
+                            <FaCalendarAlt className={`absolute right-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+                        </div>
+                        </div>
+                    </div>
+
+                    {/* Other fields */}
+                    {[
+                        { name: "region", label: "Region" },
+                        { name: "ref_qtn", label: "Ref Qtn" },
+                        { name: "site", label: "Site" },
+                        { name: "job_date", label: "Job Date" },
+                        { name: "fam_no", label: "FAM NO" },
+                        { name: "complain_nature", label: "Complain Nature" },
+                        { name: "po_no", label: "PO NO" },
+                        { name: "po_date", label: "PO Date" },
+                    ].map((field) => (
+                        <div key={field.name}>
+                        <label htmlFor={field.name} className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{field.label}:</label>
+                        <input
+                            type="text"
+                            id={field.name}
+                            name={field.name}
+                            value={fields[field.name]}
+                            onChange={handleFieldChange}
+                            readOnly={!isEditing}
+                            className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                        />
+                        </div>
+                    ))}
+                    </div>
+                )}
+                </section>
+            )}
+
+            {/* Tender Information Section */}
+            {(userRole === 'Administrator' || userRole === 'Tecnical_Head') && (
+                <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                    <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsTenderInfoExpanded(!isTenderInfoExpanded)}>
+                        <h3
+                        className={`text-2xl font-semibold ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                        } flex items-center`}
+                        >
+                        <FaInfoCircle className="mr-2 text-blue-400" /> Tender Information
+                        </h3>
+                        {isTenderInfoExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
+                    </div>
+                    {isTenderInfoExpanded && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="quotation_no" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Quotation No:</label>
+                                <label htmlFor="tender_no" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tender No:</label>
                                 <input
                                     type="text"
-                                    id="quotation_no"
-                                    name="quotation_no"
-                                    value={fields.quotation_no}
+                                    id="tender_no"
+                                    name="tender_no"
+                                    value={fields.tender_no}
                                     onChange={handleFieldChange}
                                     readOnly={!isEditing}
                                     className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                                 />
                             </div>
-
-                            {/* Selected Date */}
                             <div className="flex items-center">
-                                <label className={`font-medium text-sm mr-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date:</label>
+                                <label className={`font-medium text-sm mr-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Signed Date:</label>
                                 <div className="relative flex items-center flex-grow">
                                     <input
                                         type="date"
-                                        value={selectedDate}
-                                        onChange={(e) => isEditing && setSelectedDate(e.target.value)}
+                                        value={TenderSignedDate}
+                                        onChange={(e) => isEditing && setTenderSignedDate(e.target.value)}
                                         readOnly={!isEditing}
                                         className={`px-5 py-3 rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                                     />
@@ -244,77 +315,9 @@ const Quotation = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Other fields */}
-                        {[
-                            { name: "region", label: "Region" },
-                            { name: "ref_qtn", label: "Ref Qtn" },
-                            { name: "site", label: "Site" },
-                            { name: "job_date", label: "Job Date" },
-                            { name: "fam_no", label: "FAM NO" },
-                            { name: "complain_nature", label: "Complain Nature" },
-                            { name: "po_no", label: "PO NO" },
-                            { name: "po_date", label: "PO Date" },
-                        ].map((field) => (
-                            <div key={field.name}>
-                                <label htmlFor={field.name} className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{field.label}:</label>
-                                <input
-                                    type="text"
-                                    id={field.name}
-                                    name={field.name}
-                                    value={fields[field.name]}
-                                    onChange={handleFieldChange}
-                                    readOnly={!isEditing}
-                                    className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </section>
-
-            {/* Tender Information Section */}
-            <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
-                <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsTenderInfoExpanded(!isTenderInfoExpanded)}>
-                    <h3
-                      className={`text-2xl font-semibold ${
-                        isDarkMode ? "text-gray-200" : "text-gray-700"
-                      } flex items-center`}
-                    >
-                      <FaInfoCircle className="mr-2 text-blue-400" /> Tender Information
-                    </h3>
-                    {isTenderInfoExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
-                </div>
-                {isTenderInfoExpanded && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="tender_no" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tender No:</label>
-                            <input
-                                type="text"
-                                id="tender_no"
-                                name="tender_no"
-                                value={fields.tender_no}
-                                onChange={handleFieldChange}
-                                readOnly={!isEditing}
-                                className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                            />
-                        </div>
-                        <div className="flex items-center">
-                            <label className={`font-medium text-sm mr-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Signed Date:</label>
-                            <div className="relative flex items-center flex-grow">
-                                <input
-                                    type="date"
-                                    value={TenderSignedDate}
-                                    onChange={(e) => isEditing && setTenderSignedDate(e.target.value)}
-                                    readOnly={!isEditing}
-                                    className={`px-5 py-3 rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                                />
-                                <FaCalendarAlt className={`absolute right-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </section>
+                    )}
+                </section>
+            )}
 
             {/* Items Table */}
             <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
@@ -410,141 +413,145 @@ const Quotation = () => {
             </section>
 
             {/* Totals and Summary Section */}
-            <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
-                <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}>
-                    <h3
-                      className={`text-2xl font-semibold ${
-                        isDarkMode ? "text-gray-200" : "text-gray-700"
-                      } flex items-center`}
-                    >
-                      <FaInfoCircle className="mr-2 text-blue-400" /> Summary
-                    </h3>
-                    {isSummaryExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
-                </div>
-                {isSummaryExpanded && (
-                    <div className="overflow-x-auto">
-                        <table className={`w-full text-left rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                            <tbody>
-                                <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} w-3/4`}>
-                                        <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (Without TAX):</label>
-                                    </td>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} w-1/4`}>
-                                        <input
-                                            type="text"
-                                            value={calculateTotalWithoutTax()}
-                                            readOnly
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800/70' : 'bg-gray-50'}`}>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <div className="flex items-center space-x-4">
-                                            <label htmlFor="vatValue" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>VAT (%):</label>
-                                            <input
-                                                type="number"
-                                                id="vatValue"
-                                                min="0"
-                                                value={vatValue}
-                                                onChange={handleVatChange}
-                                                readOnly={!isEditing}
-                                                className={`flex-grow px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                                            />
-                                        </div>
-                                    </td>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <input
-                                            type="text"
-                                            value={calculateVAT()}
-                                            readOnly
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (With TAX):</label>
-                                    </td>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <input
-                                            type="text"
-                                            value={calculateTotalWithTax()}
-                                            readOnly
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800/70' : 'bg-gray-50'}`}>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <div className="flex items-center space-x-4">
-                                            <label htmlFor="discountValue" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Discount (%):</label>
-                                            <input
-                                                type="number"
-                                                id="discountValue"
-                                                min="0"
-                                                value={discountValue}
-                                                onChange={handleDiscountChange}
-                                                readOnly={!isEditing}
-                                                className={`flex-grow px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                                            />
-                                        </div>
-                                    </td>
-                                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <input
-                                            type="text"
-                                            value={calculateDiscount()}
-                                            readOnly
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <td className={`p-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (With TAX & Discount):</label>
-                                    </td>
-                                    <td className={`p-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                        <input
-                                            type="text"
-                                            value={calculateTotalWithTaxAndDiscount()}
-                                            readOnly
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+            {(userRole === 'Administrator' || userRole === 'Tecnical_Head') && (
+                <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                    <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}>
+                        <h3
+                        className={`text-2xl font-semibold ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                        } flex items-center`}
+                        >
+                        <FaInfoCircle className="mr-2 text-blue-400" /> Summary
+                        </h3>
+                        {isSummaryExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
                     </div>
-                )}
-            </section>
+                    {isSummaryExpanded && (
+                        <div className="overflow-x-auto">
+                            <table className={`w-full text-left rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                                <tbody>
+                                    <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} w-3/4`}>
+                                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (Without TAX):</label>
+                                        </td>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} w-1/4`}>
+                                            <input
+                                                type="text"
+                                                value={calculateTotalWithoutTax()}
+                                                readOnly
+                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800/70' : 'bg-gray-50'}`}>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <div className="flex items-center space-x-4">
+                                                <label htmlFor="vatValue" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>VAT (%):</label>
+                                                <input
+                                                    type="number"
+                                                    id="vatValue"
+                                                    min="0"
+                                                    value={vatValue}
+                                                    onChange={handleVatChange}
+                                                    readOnly={!isEditing}
+                                                    className={`flex-grow px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <input
+                                                type="text"
+                                                value={calculateVAT()}
+                                                readOnly
+                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (With TAX):</label>
+                                        </td>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <input
+                                                type="text"
+                                                value={calculateTotalWithTax()}
+                                                readOnly
+                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800/70' : 'bg-gray-50'}`}>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <div className="flex items-center space-x-4">
+                                                <label htmlFor="discountValue" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Discount (%):</label>
+                                                <input
+                                                    type="number"
+                                                    id="discountValue"
+                                                    min="0"
+                                                    value={discountValue}
+                                                    onChange={handleDiscountChange}
+                                                    readOnly={!isEditing}
+                                                    className={`flex-grow px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <input
+                                                type="text"
+                                                value={calculateDiscount()}
+                                                readOnly
+                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                                        <td className={`p-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total (With TAX & Discount):</label>
+                                        </td>
+                                        <td className={`p-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <input
+                                                type="text"
+                                                value={calculateTotalWithTaxAndDiscount()}
+                                                readOnly
+                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} cursor-not-allowed opacity-70`}
+                                            />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </section>
+            )}
 
             {/* Special Note Section */}
-            <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
-                <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsSpecialNoteExpanded(!isSpecialNoteExpanded)}>
-                    <h3
-                      className={`text-2xl font-semibold ${
-                        isDarkMode ? "text-gray-200" : "text-gray-700"
-                      } flex items-center`}
-                    >
-                      <FaInfoCircle className="mr-2 text-blue-400" /> Additional Notes
-                    </h3>
-                    {isSpecialNoteExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
-                </div>
-                {isSpecialNoteExpanded && (
-                    <div>
-                        <label htmlFor="special_note" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Special Note:</label>
-                        <textarea
-                            id="special_note"
-                            name="special_note"
-                            value={fields.special_note}
-                            onChange={handleFieldChange}
-                            readOnly={!isEditing}
-                            rows="5"
-                            className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                        />
+            {(userRole === 'Administrator' || userRole === 'Tecnical_Head') && (
+                <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                    <div className="flex justify-between items-center mb-6 cursor-pointer" onClick={() => setIsSpecialNoteExpanded(!isSpecialNoteExpanded)}>
+                        <h3
+                        className={`text-2xl font-semibold ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                        } flex items-center`}
+                        >
+                        <FaInfoCircle className="mr-2 text-blue-400" /> Additional Notes
+                        </h3>
+                        {isSpecialNoteExpanded ? <FaChevronUp className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} /> : <FaChevronDown className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />}
                     </div>
-                )}
-            </section>
+                    {isSpecialNoteExpanded && (
+                        <div>
+                            <label htmlFor="special_note" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Special Note:</label>
+                            <textarea
+                                id="special_note"
+                                name="special_note"
+                                value={fields.special_note}
+                                onChange={handleFieldChange}
+                                readOnly={!isEditing}
+                                rows="5"
+                                className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                            />
+                        </div>
+                    )}
+                </section>
+            )}
 
             {/* Submit Button */}
             <div className="flex justify-end mt-8">

@@ -57,16 +57,16 @@ const LeftDashboard = () => {
   // ✅ Navigation items
   const navItems = [
     { icon: <AiOutlineHome className="text-xl" />, name: "Dashboard", path: "/dashboard" },
-    ...(userRole === "Administrator" || userRole === "Technical_Head"
+    ...(userRole === "Administrator" || userRole === "Tecnical_Head"
       ? [{ icon: <FiBarChart2 className="text-xl" />, name: "Summary", path: "/dashboard/summary" }]
       : []),
-    ...(userRole === "Administrator" || userRole === "Technical_Head"
+    ...(userRole === "Administrator" || userRole === "Tecnical_Head"
       ? [{ icon: <FiBox className="text-xl" />, name: "Add Item", path: "/dashboard/additem" }]
       : []),
-    ...(userRole === "Administrator" || userRole === "Technical_Head"
+    ...(userRole === "Administrator" || userRole === "Tecnical_Head"
       ? [{ icon: <LuUsers className="text-xl" />, name: "Add User", path: "/dashboard/adduser" }]
       : []),
-    ...(userRole === "Administrator" || userRole === "Technical_Head"
+    ...(userRole === "Administrator" || userRole === "Tecnical_Head"
       ? [{ icon: <FiUser className="text-xl" />, name: "Add Customer", path: "/dashboard/addcustomer" }]
       : []),
     { icon: <AiOutlineSetting className="text-xl" />, name: "Settings", path: "/dashboard/settings" },

@@ -198,7 +198,7 @@ const JobHome = ({ onGoBack, job }) => {
     return (
       <div
         className={`fixed inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm ${
-          isDarkMode ? "bg-gray-900/80" : "bg-white/80"
+          isDarkMode ? "bg-black/80" : "bg-white/80"
         }`}
       >
         <div

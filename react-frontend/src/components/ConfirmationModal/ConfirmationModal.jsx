@@ -68,7 +68,9 @@ const ConfirmationModal = ({
   // 5. Use createPortal to render the modal outside the component tree
   return createPortal(
     <div
-      className="fixed inset-0 bg-gray-900/40 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ease-in-out"
+      className={`fixed inset-0 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ease-in-out backdrop-blur-sm ${
+        isDarkMode ? "bg-black/40" : "bg-white/40"
+      }`}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
       role="dialog"

@@ -3,6 +3,8 @@ import { User, Mail, Phone, Check, XCircle, Trash2, Edit, Search, Calendar, MapP
 // Assuming ThemeContext is available from your project structure
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import Notification from '../../components/Notification/Notification'; // Import the Notification component
+import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
+import LoadingItems from "../../components/Loading/LoadingItems";
 
 // Placeholder for ThemeContext if not available
 
@@ -128,6 +130,8 @@ const AddCustomer = () => {
 
   // Main list of all customers fetched from the API
   const [customers, setCustomers] = useState([]);
+  // Loading state for customers
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
   // Filtered list of customers based on search term
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   // Search term input
@@ -142,7 +146,7 @@ const AddCustomer = () => {
   const [editingCustomerId, setEditingCustomerId] = useState(null);
   // Removed isEditing state as areas and branches section should always be visible
 
-  // States for the custom delete confirmation modal
+  // States for the delete confirmation modal
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [customerToDelete, setCustomerToDelete] = useState(null);
 
@@ -230,6 +234,7 @@ const AddCustomer = () => {
   // Fetches customer data from the API
   const fetchCustomers = async () => {
     try {
+      setLoadingCustomers(true);
       // In a real application, replace with a fetch to your actual backend.
       const response = await fetch("/api/customers"); // Replace with your actual API endpoint
       if (!response.ok) {
@@ -260,6 +265,8 @@ const AddCustomer = () => {
     } catch (error) {
       console.error("Error fetching customers:", error);
       setErrorMessage("Failed to fetch customers: " + error.message);
+    } finally {
+      setLoadingCustomers(false);
     }
   };
 
@@ -759,7 +766,11 @@ const AddCustomer = () => {
       {/* Customer List Display Section - Now using CustomerCard */}
       <div className={`${isDarkMode ? "bg-gray-900 border border-gray-800" : "bg-white border border-gray-200"} rounded-xl p-6 shadow-lg mb-6`}>
         <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Existing Customers</h2>
-        {filteredCustomers.length === 0 ? (
+        {loadingCustomers ? (
+          <div className="flex justify-center items-center my-8">
+            <LoadingItems isDarkMode={isDarkMode} />
+          </div>
+        ) : filteredCustomers.length === 0 ? (
           <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>No customers found. Try adding some or adjusting your search.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -776,29 +787,15 @@ const AddCustomer = () => {
         )}
       </div>
 
-      {/* Custom Delete Confirmation Modal */}
-      {showDeleteConfirmModal && (
-        <div className="fixed inset-0 bg-blue-200/5 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className={`${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} rounded-lg shadow-xl p-6 max-w-sm w-full space-y-4`}>
-            <h3 className="text-lg font-bold">Confirm Deletion</h3>
-            <p>Are you sure you want to delete customer "<strong>{customerToDelete?.customer_name}</strong>"? This action cannot be undone.</p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={cancelDelete}
-                className={`px-4 py-2 rounded-md border ${isDarkMode? "bg-gray-800 hover:bg-gray-600 border-gray-300 text-white": "bg-white hover:bg-gray-300 border-gray-300 text-black"} transition-colors`}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
-              >
-                Conform
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        show={showDeleteConfirmModal}
+        title="Confirm Deletion"
+        message={`Are you sure you want to delete customer "${customerToDelete?.customer_name}"? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };

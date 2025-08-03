@@ -141,12 +141,15 @@ const ProfileSettings = () => {
     };
 
     const handleRemoveProfileImage = () => {
-        setUserData(prevData => ({
-            ...prevData,
-            profile_image_url: null
-        }));
-        setSelectedProfileImageFile(null);
-        setIsProfileImageRemoved(true);
+        // Only allow removal if there's an existing image URL or a selected file
+        if (userData.profile_image_url || selectedProfileImageFile) {
+            setUserData(prevData => ({
+                ...prevData,
+                profile_image_url: null
+            }));
+            setSelectedProfileImageFile(null);
+            setIsProfileImageRemoved(true); // Flag for backend to remove
+        }
     };
 
     // --- HANDLER: Save Profile ---
@@ -164,15 +167,11 @@ const ProfileSettings = () => {
         const formData = new FormData();
         let changesMade = false;
 
-        console.log("Original User Data:", originalUserData);
-        console.log("Current User Data:", userData);
-
         // Check each field for changes (excluding ID and profile_image_url)
         const fieldsToCheck = ['fullname', 'username', 'email', 'idnumber', 'phoneno'];
         
         fieldsToCheck.forEach(field => {
             if (originalUserData && userData[field] !== originalUserData[field]) {
-                console.log(`Field changed: ${field} = ${userData[field]}`);
                 formData.append(field, userData[field] || ''); // Ensure we don't send null/undefined
                 changesMade = true;
             }
@@ -185,13 +184,11 @@ const ProfileSettings = () => {
             changesMade = true;
         }
 
-        // Handle profile image changes - FIXED VERSION
+        // Handle profile image changes
         if (selectedProfileImageFile) {
             formData.append('profile_image', selectedProfileImageFile);
-            // Don't append remove_profile_image when uploading a new image
             changesMade = true;
         } else if (isProfileImageRemoved) {
-            // Only append remove_profile_image when actually removing
             formData.append('remove_profile_image', '1'); // Use '1' for true
             changesMade = true;
         }
@@ -203,12 +200,6 @@ const ProfileSettings = () => {
             return;
         }
 
-        // Debug: Log what we're sending
-        console.log("FormData contents:");
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-
         try {
             const token = localStorage.getItem('authToken');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -216,7 +207,6 @@ const ProfileSettings = () => {
             formData.append('_method', 'PUT'); // Spoof method for Laravel
             const response = await axios.post(`${API_BASE_URL}/profile`, formData, { headers });
 
-            console.log('Profile saved successfully:', response.data);
             setSaveSuccessMessage(response.data.message);
 
             // Update both current and original data with the response
@@ -245,7 +235,6 @@ const ProfileSettings = () => {
             console.error('Error saving profile:', error);
             if (error.response) {
                 if (error.response.data && error.response.data.errors) {
-                    console.log("Validation Errors:", error.response.data.errors);
                     const validationErrors = error.response.data.errors;
                     let errorMessages = [];
                     for (const key in validationErrors) {
@@ -268,9 +257,10 @@ const ProfileSettings = () => {
     };
 
     return (
-        <div className={`min-h-screen p-6 transition-all ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}>
-            <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center`}>
-                <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Profile Settings</h1>
+        <div className={`min-h-screen p-4 sm:p-6 lg:p-8 transition-all ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-800'}`}>
+            {/* Header Section */}
+            <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-4 sm:p-6 shadow-lg flex justify-between items-center`}>
+                <h1 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Profile Settings</h1>
             </div>
 
             {/* Notification Components */}
@@ -278,33 +268,35 @@ const ProfileSettings = () => {
             {errorMessage && <Notification message={errorMessage} type="error" onClose={() => setErrorMessage("")} />}
 
             {/* Profile Image Section */}
-            <div className={`shadow-md rounded-lg p-6 mt-6 flex items-center space-x-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
-                <div>
+            <div className={`shadow-md rounded-lg p-4 sm:p-6 mt-6 flex flex-col sm:flex-row items-center sm:space-x-6 space-y-4 sm:space-y-0 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
+                <div className="flex-shrink-0"> {/* Use flex-shrink-0 to prevent image from shrinking */}
                     {userData.profile_image_url ? (
                         <img
                             src={userData.profile_image_url}
                             alt="Profile"
-                            className="w-24 h-24 rounded-full object-cover border border-gray-500"
+                            className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-2 border-gray-500"
                         />
                     ) : (
-                        <FiUser className="w-24 h-24 rounded-full text-gray-400" />
+                        <FiUser className="w-24 h-24 sm:w-32 sm:h-32 rounded-full text-gray-400 border-2 border-gray-500 p-2" />
                     )}
                 </div>
-                <div>
-                    <button
-                        onClick={handleUploadImageButtonClick}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition-all"
-                    >
-                        Change Image
-                    </button>
-                    {userData.profile_image_url && (
+                <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <button
-                            onClick={handleRemoveProfileImage}
-                            className="ml-3 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition-all"
+                            onClick={handleUploadImageButtonClick}
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition-all text-sm sm:text-base w-full sm:w-auto"
                         >
-                            Remove
+                            Change Image
                         </button>
-                    )}
+                        {(userData.profile_image_url || selectedProfileImageFile) && (
+                            <button
+                                onClick={handleRemoveProfileImage}
+                                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition-all text-sm sm:text-base w-full sm:w-auto"
+                            >
+                                Remove
+                            </button>
+                        )}
+                    </div>
                     <input
                         type="file"
                         accept="image/*"
@@ -312,21 +304,21 @@ const ProfileSettings = () => {
                         className="hidden"
                         ref={profileFileInputRef}
                     />
-                    <p className="text-sm dark:text-gray-400 mt-1">PNG or JPG (Max 2MB)</p>
+                    <p className="text-xs sm:text-sm dark:text-gray-400 mt-2">PNG or JPG (Max 2MB)</p>
                 </div>
             </div>
 
             {/* Account Settings Section - Personal Information */}
-            <div className={`shadow-md rounded-lg p-6 mt-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
-                <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className={`shadow-md rounded-lg p-4 sm:p-6 mt-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
+                <h3 className="text-lg sm:text-xl font-semibold mb-4">Personal Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                         <label htmlFor="fullname" className="block text-sm dark:text-gray-400 font-bold mb-2">Full Name</label>
                         <input
                             type="text"
                             id="fullname"
                             name="fullname"
-                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                             value={userData.fullname}
                             onChange={handleInputChange}
                         />
@@ -337,7 +329,7 @@ const ProfileSettings = () => {
                             type="text"
                             id="username"
                             name="username"
-                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                             value={userData.username}
                             onChange={handleInputChange}
                         />
@@ -348,7 +340,7 @@ const ProfileSettings = () => {
                             type="email"
                             id="email"
                             name="email"
-                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                             value={userData.email}
                             onChange={handleInputChange}
                         />
@@ -359,7 +351,7 @@ const ProfileSettings = () => {
                             type="text"
                             id="idnumber"
                             name="idnumber"
-                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                             value={userData.idnumber}
                             onChange={handleInputChange}
                         />
@@ -370,7 +362,7 @@ const ProfileSettings = () => {
                             type="text"
                             id="phoneno"
                             name="phoneno"
-                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                            className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                             value={userData.phoneno}
                             onChange={handleInputChange}
                         />
@@ -379,9 +371,9 @@ const ProfileSettings = () => {
             </div>
 
             {/* Password Settings Section */}
-            <div className={`shadow-md rounded-lg p-6 mt-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
-                <h3 className="text-xl font-semibold mb-4">Change Password</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className={`shadow-md rounded-lg p-4 sm:p-6 mt-6 transition-all ${isDarkMode ? 'bg-gray-900 border border-gray-600' : 'bg-white border border-gray-300'}`}>
+                <h3 className="text-lg sm:text-xl font-semibold mb-4">Change Password</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     {/* New Password Field */}
                     <div>
                         <label htmlFor="newPassword" className="block text-sm dark:text-gray-400 font-bold mb-2">New Password</label>
@@ -390,7 +382,7 @@ const ProfileSettings = () => {
                                 type={showNewPassword ? "text" : "password"}
                                 id="newPassword"
                                 name="new_password"
-                                className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                                className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base pr-10 ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                                 placeholder="Leave blank to keep current password"
                                 value={newPassword}
                                 onChange={handleNewPasswordChange}
@@ -400,6 +392,7 @@ const ProfileSettings = () => {
                                 type="button"
                                 onClick={toggleNewPasswordVisibility}
                                 className={`absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-800'}`}
+                                aria-label={showNewPassword ? "Hide new password" : "Show new password"}
                             >
                                 {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -413,7 +406,7 @@ const ProfileSettings = () => {
                                 type={showConfirmPassword ? "text" : "password"}
                                 id="confirmPassword"
                                 name="new_password_confirmation"
-                                className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
+                                className={`w-full py-2 px-3 rounded-md border focus:ring-2 focus:outline-none transition-all text-sm sm:text-base pr-10 ${isDarkMode ? 'bg-gray-800 text-white border-gray-600 focus:ring-blue-500' : 'bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-400'}`}
                                 placeholder="Confirm new password"
                                 value={confirmPassword}
                                 onChange={handleConfirmPasswordChange}
@@ -423,6 +416,7 @@ const ProfileSettings = () => {
                                 type="button"
                                 onClick={toggleConfirmPasswordVisibility}
                                 className={`absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-800'}`}
+                                aria-label={showConfirmPassword ? "Hide confirmed password" : "Show confirmed password"}
                             >
                                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -432,10 +426,10 @@ const ProfileSettings = () => {
             </div>
 
             {/* Save Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-6">
                 <button
                     onClick={handleSaveProfile}
-                    className={`px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-colors mt-6 ${isSaving ? 'opacity-75 cursor-wait' : ''}`}
+                    className={`px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-colors ${isSaving ? 'opacity-75 cursor-wait' : ''}`}
                     disabled={isSaving}
                 >
                     {isSaving ? 'Saving Changes...' : 'Save Changes'}

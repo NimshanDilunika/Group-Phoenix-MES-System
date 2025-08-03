@@ -7,6 +7,7 @@ import axios from "axios";
 import Notification from '../../components/Notification/Notification';
 // Import the ConfirmationModal component from its new file
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
+import LoadingItems from "../../components/Loading/LoadingItems";
 
 
 const AddItem = () => {
@@ -19,6 +20,7 @@ const AddItem = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [items, setItems] = useState([]);
+    const [loadingItems, setLoadingItems] = useState(false);
     const [editingItemId, setEditingItemId] = useState(null);
     const [editFormData, setEditFormData] = useState({
         itemName: "",
@@ -41,9 +43,11 @@ const AddItem = () => {
 
     const fetchItems = async () => {
         try {
+            setLoadingItems(true);
             const token = localStorage.getItem("authToken");
             if (!token) {
                 showNotification("User is not authenticated. Please log in.", "error");
+                setLoadingItems(false);
                 return;
             }
             const response = await axios.get("http://127.0.0.1:8000/api/items", {
@@ -56,6 +60,8 @@ const AddItem = () => {
             console.error("Error fetching items:", error);
             const msg = "Failed to fetch items. " + (error.response?.data?.message || error.message);
             showNotification(msg, "error");
+        } finally {
+            setLoadingItems(false);
         }
     };
 
@@ -446,7 +452,11 @@ const AddItem = () => {
                 } rounded-xl p-6 shadow-lg mb-6 flex-grow overflow-auto mt-4`}
             >
                 <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Items List</h2>
-                {items.length === 0 ? (
+                {loadingItems ? (
+                    <div className="flex justify-center items-center my-8">
+                        <LoadingItems isDarkMode={isDarkMode} />
+                    </div>
+                ) : items.length === 0 ? (
                     <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>No items found.</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

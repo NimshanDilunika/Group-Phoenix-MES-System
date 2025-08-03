@@ -44,40 +44,40 @@ const CancelJobPage = ({ jobs }) => {
     };
 
     return (
-        <div className={` transition-colors duration-300 ${
+        <div className={`transition-colors duration-300 ${
             isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
         }`}>
-            <div className="flex flex-col items-center justify-center p-6 flex-grow">
-                <div className={`rounded-lg shadow-lg p-8 w-full max-w-xl relative z-10 transition-colors duration-300 ${
+            <div className="flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 flex-grow">
+                <div className={`rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 md:p-8 w-full max-w-md sm:max-w-lg md:max-w-xl relative z-10 transition-colors duration-300 ${
                     isDarkMode ? "bg-gray-800 text-white border border-gray-700" : "bg-white text-gray-900 border border-gray-300"
                 }`}>
-                    <p className="text-sm text-gray-500 mb-2 text-center">Job ID: {jobId}</p>
-                    <h2 className="text-2xl font-bold mb-6 text-center text-red-600">Cancel Job</h2>
+                    <p className={`text-xs sm:text-sm text-gray-500 mb-2 text-center ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Job ID: {jobId}</p>
+                    <h2 className={`text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center ${isDarkMode ? "text-red-400" : "text-red-600"}`}>Cancel Job</h2>
 
                     {jobDetails && (
-                        <div className="mb-6 space-y-2">
-                            <p><strong>Job Name:</strong> {jobDetails.name}</p>
-                            <p><strong>Job Number:</strong> {jobDetails.number}</p>
-                            <p><strong>Date:</strong> {jobDetails.date}</p>
+                        <div className="mb-4 sm:mb-6 space-y-2">
+                            <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}><strong>Job Name:</strong> {jobDetails.name}</p>
+                            <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}><strong>Job Number:</strong> {jobDetails.number}</p>
+                            <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}><strong>Date:</strong> {jobDetails.date}</p>
                         </div>
                     )}
 
-                    <label className="block mb-2 font-semibold">Reason:</label>
+                    <label className={`block mb-2 font-semibold text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>Reason:</label>
                     <input
                         type="text"
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
-                        className={`w-full p-3 rounded mb-4 border transition-colors duration-300 ${
+                        className={`w-full p-2 sm:p-3 rounded-lg mb-4 border transition-colors duration-300 ${
                             isDarkMode ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400" : "bg-white border-gray-300 text-gray-900 placeholder-gray-600"
                         }`}
                         placeholder="Enter reason for cancellation"
                     />
 
-                    <label className="block mb-2 font-semibold">Description:</label>
+                    <label className={`block mb-2 font-semibold text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>Description:</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className={`w-full p-3 rounded mb-6 border transition-colors duration-300 ${
+                        className={`w-full p-2 sm:p-3 rounded-lg mb-6 border transition-colors duration-300 ${
                             isDarkMode ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400" : "bg-white border-gray-300 text-gray-900 placeholder-gray-600"
                         }`}
                         placeholder="Enter detailed description"
@@ -86,11 +86,10 @@ const CancelJobPage = ({ jobs }) => {
 
                     <button
                         onClick={handleInitialCancel}
-                        className="w-full bg-red-600 text-white py-3 rounded hover:bg-red-700 font-semibold transition-colors duration-300"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-colors duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        Cancel Job
+                        <span className="text-sm sm:text-base">Cancel Job</span>
                     </button>
-                    <br/>
                 </div>
 
                 <ConfirmationModal

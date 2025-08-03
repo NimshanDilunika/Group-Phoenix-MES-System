@@ -457,7 +457,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
 
   // --- Component Render ---
   return (
-    <div className={`w-full px-8 py-8 rounded-3xl shadow-2xl mt-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-gray-50 border border-gray-700' : 'bg-white text-gray-900 border border-gray-200'}`}>
+    <div className={`w-full px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-2xl mt-4 sm:mt-6 md:mt-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-gray-50 border border-gray-700' : 'bg-white text-gray-900 border border-gray-200'}`}>
       {/* Modern Notification Toast */}
       {notification.message && (
         <div
@@ -534,19 +534,20 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
       `}</style>
 
       {/* Header and Action Buttons */}
-      <div className="flex justify-between items-center mb-8">
-        <h2 className={`text-4xl font-extrabold tracking-tight ${isDarkMode ? 'text-blue-400' : 'text-blue-700'} `}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h2 className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${isDarkMode ? 'text-blue-400' : 'text-blue-700'} `}>
           Job Card
         </h2>
          
-        <div className="flex space-x-4">
+        <div className="flex flex-wrap gap-2 sm:gap-4">
           {
             userRole !== 'Technician' && jobCardId && !isEditing && (
               <button
                 onClick={handleEdit}
-                className={`px-6 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-yellow-600 hover:bg-yellow-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}`}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-yellow-600 hover:bg-yellow-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}`}
               >
-                <FaEdit className="mr-3 text-lg" /> Edit
+                <FaEdit className="mr-2 sm:mr-3 text-base sm:text-lg" /> 
+                <span className="text-sm sm:text-base">Edit</span>
               </button>
             )
           }  
@@ -555,15 +556,17 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
             <>
               <button
                 onClick={handleDownload}
-                className={`px-6 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-indigo-700 hover:bg-indigo-800 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-indigo-700 hover:bg-indigo-800 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
               >
-                <FaDownload className="mr-3 text-lg" /> Download
+                <FaDownload className="mr-2 sm:mr-3 text-base sm:text-lg" /> 
+                <span className="text-sm sm:text-base">Download</span>
               </button>
               <button
                 onClick={handlePrint}
-                className={`px-6 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-emerald-700 hover:bg-emerald-800 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}`}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-emerald-700 hover:bg-emerald-800 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}`}
               >
-                <FaPrint className="mr-3 text-lg" /> Print
+                <FaPrint className="mr-2 sm:mr-3 text-base sm:text-lg" /> 
+                <span className="text-sm sm:text-base">Print</span>
               </button>
             </>
           )}
@@ -571,43 +574,43 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
       </div>
 
       {/* Customer Information Section */}
-      <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+      <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
         <div
-          className="flex justify-between items-center cursor-pointer mb-6"
+          className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
           onClick={() => toggleSection('customerInfo')}
         >
           <h3
-            className={`text-2xl font-semibold ${
+            className={`text-xl sm:text-2xl font-semibold ${
               isDarkMode ? "text-gray-200" : "text-gray-700"
             } flex items-center`}
             >
             <FaInfoCircle className="mr-2 text-blue-400" /> Customer Information
           </h3>
           {expandedSections.customerInfo ? (
-            <FaChevronUp className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           ) : (
-            <FaChevronDown className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           )}
         </div>
         <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.customerInfo ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
           style={{ maxHeight: expandedSections.customerInfo ? '1000px' : '0' }} // A large enough value
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Date Picker */}
-            <div className="col-span-full mb-4 flex items-center">
-              <label className={`font-semibold text-lg mr-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date:</label>
-              <div className="relative flex items-center">
+            <div className="col-span-full mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+              <label className={`font-semibold text-base sm:text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date:</label>
+              <div className="relative flex items-center w-full sm:w-auto flex-grow">
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => isEditing && setSelectedDate(e.target.value)}
                   readOnly={!isEditing}
-                  className={`px-5 py-3 rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                  className={`w-full px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                 />
-                <FaCalendarAlt className={`absolute right-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+                <FaCalendarAlt className={`absolute right-3 sm:right-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
               </div>
-              <div className={`ml-auto px-4 py-2 rounded-xl text-lg font-bold ${isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
+              <div className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-base sm:text-lg font-bold ${isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
                 Job Card No: {jobCardId || "N/A"}
               </div>
             </div>
@@ -621,7 +624,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                 value={fields.customer_name}
                 onChange={handleFieldChange}
                 disabled={!isEditing}
-                className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
               >
                 <option value="">Select Customer</option>
                 {customers.map((customer) => (
@@ -648,7 +651,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                     value={fields[field.name]}
                     onChange={handleFieldChange}
                     disabled={!isEditing}
-                    className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                    className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                   >
                     <option value="">{`Select ${field.label}`}</option>
                     {field.options.map(option => (
@@ -663,7 +666,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                     value={fields[field.name]}
                     onChange={handleFieldChange}
                     readOnly={!isEditing}
-                    className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                    className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                   />
                 )}
               </div>
@@ -673,29 +676,29 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
       </section>
 
       {/* Job Card Details Section */}
-      <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+      <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
         <div
-          className="flex justify-between items-center cursor-pointer mb-6"
+          className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
           onClick={() => toggleSection('jobCardInfo')}
         >
           <h3
-            className={`text-2xl font-semibold ${
+            className={`text-xl sm:text-2xl font-semibold ${
               isDarkMode ? "text-gray-200" : "text-gray-700"
             } flex items-center`}
             >
             <FaInfoCircle className="mr-2 text-blue-400" /> Job Card Information
           </h3>
           {expandedSections.jobCardInfo ? (
-            <FaChevronUp className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           ) : (
-            <FaChevronDown className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           )}
         </div>
         <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.jobCardInfo ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
           style={{ maxHeight: expandedSections.jobCardInfo ? '1000px' : '0' }} // A large enough value
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Job Card Fields */}
             {[
             { name: "fam_no", label: "FAM No" },
@@ -711,7 +714,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
             { name: "avr", label: "AVR" },
             ].map((field) => (
               <div key={field.name}>
-                <label htmlFor={field.name} className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{field.label}:</label>
+                <label htmlFor={field.name} className={`block text-sm sm:text-base font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{field.label}:</label>
                 <input
                   type="text"
                   id={field.name}
@@ -719,7 +722,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                   value={fields[field.name]}
                   onChange={handleFieldChange}
                   readOnly={!isEditing}
-                  className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                  className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                 />
               </div>
             ))}
@@ -728,43 +731,45 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
       </section>
 
       {/* Filters and Battery Section */}
-      <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+      <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
         <div
-          className="flex justify-between items-center cursor-pointer mb-6"
+          className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
           onClick={() => toggleSection('serviceChecklist')}
         >
           <h3
-            className={`text-2xl font-semibold ${
+            className={`text-xl sm:text-2xl font-semibold ${
               isDarkMode ? "text-gray-200" : "text-gray-700"
             } flex items-center`}
             >
             <FaInfoCircle className="mr-2 text-blue-400" /> Service Checklist
           </h3>
           {expandedSections.serviceChecklist ? (
-            <FaChevronUp className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           ) : (
-            <FaChevronDown className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           )}
         </div>
         <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.serviceChecklist ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
           style={{ maxHeight: expandedSections.serviceChecklist ? '1000px' : '0' }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {["oil_filter", "fuel_filter", "air_filter", "battery_charge", "oil"].map((name) => (
-              <div className="flex items-center space-x-4" key={name}>
-                <input
-                  type="checkbox"
-                  id={name}
-                  name={name}
-                  checked={filters[name] || false}
-                  onChange={handleFilterChange}
-                  disabled={!isEditing}
-                  className={`h-6 w-6 rounded text-blue-600 focus:ring-blue-500 transition-all duration-200 ${isDarkMode ? 'bg-gray-600 border-gray-500' : 'bg-gray-200 border-gray-300'}`}
-                />
-                <label htmlFor={name} className={`font-medium capitalize flex-grow ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {name.replace(/_/g, " ")}:
-                </label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4" key={name}>
+                <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+                  <input
+                    type="checkbox"
+                    id={name}
+                    name={name}
+                    checked={filters[name] || false}
+                    onChange={handleFilterChange}
+                    disabled={!isEditing}
+                    className={`h-5 w-5 sm:h-6 sm:w-6 rounded text-blue-600 focus:ring-blue-500 transition-all duration-200 ${isDarkMode ? 'bg-gray-600 border-gray-500' : 'bg-gray-200 border-gray-300'}`}
+                  />
+                  <label htmlFor={name} className={`font-medium capitalize flex-grow ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {name.replace(/_/g, " ")}:
+                  </label>
+                </div>
                 <input
                   type="text"
                   name={`${name}_desc`}
@@ -772,12 +777,12 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                   onChange={handleFilterChange}
                   readOnly={!isEditing}
                   placeholder="Description (if any)"
-                  className={`w-1/2 border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                  className={`w-full sm:w-1/2 border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                 />
               </div>
             ))}
 
-            <div className="flex items-center space-x-4 col-span-full md:col-span-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 col-span-full">
               <label htmlFor="battery" className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Battery Details:</label>
               <input
                 type="text"
@@ -786,10 +791,10 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                 value={filters.battery || ""}
                 onChange={handleFilterChange}
                 readOnly={!isEditing}
-                className={`flex-grow border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                className={`w-full sm:flex-grow border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
               />
             </div>
-            <div className="flex items-center space-x-4 col-span-full md:col-span-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 col-span-full">
               <label htmlFor="other" className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Other Remarks:</label>
               <input
                 type="text"
@@ -798,7 +803,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                 value={filters.other || ""}
                 onChange={handleFilterChange}
                 readOnly={!isEditing}
-                className={`flex-grow border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                className={`w-full sm:flex-grow border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
               />
             </div>
           </div>
@@ -806,30 +811,30 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
       </section>
 
       {/* ATS Info and Job Description */}
-      <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+      <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
         <div
-          className="flex justify-between items-center cursor-pointer mb-6"
+          className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
           onClick={() => toggleSection('serviceReport')}
         >
           <h3
-            className={`text-2xl font-semibold ${
+            className={`text-xl sm:text-2xl font-semibold ${
               isDarkMode ? "text-gray-200" : "text-gray-700"
             } flex items-center`}
             >
             <FaInfoCircle className="mr-2 text-blue-400" /> Service Report
           </h3>
           {expandedSections.serviceReport ? (
-            <FaChevronUp className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           ) : (
-            <FaChevronDown className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           )}
         </div>
         <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.serviceReport ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
           style={{ maxHeight: expandedSections.serviceReport ? '1000px' : '0' }}
         >
-          <div className="mb-6">
-            <label htmlFor="ats_info" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>ATS Information:</label>
+          <div className="mb-4 sm:mb-6">
+            <label htmlFor="ats_info" className={`block text-sm sm:text-base font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>ATS Information:</label>
             <input
               type="text"
               id="ats_info"
@@ -837,41 +842,41 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
               value={fields.ats_info}
               onChange={handleFieldChange}
               readOnly={!isEditing}
-              className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+              className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
             />
           </div>
           <div>
-            <label htmlFor="job_description" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Job Description:</label>
+            <label htmlFor="job_description" className={`block text-sm sm:text-base font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Job Description:</label>
             <textarea
               id="job_description"
               name="job_description"
               value={fields.job_description}
               onChange={handleFieldChange}
               readOnly={!isEditing}
-              rows="5"
-              className={`w-full border rounded-xl px-4 py-2.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+              rows="4"
+              className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
             />
           </div>
         </div>
       </section>
 
       {/* Items Table */}
-      <section className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+      <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
         <div
-          className="flex justify-between items-center cursor-pointer mb-6"
+          className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
           onClick={() => toggleSection('itemsReplaced')}
         >
           <h3
-            className={`text-2xl font-semibold ${
+            className={`text-xl sm:text-2xl font-semibold ${
               isDarkMode ? "text-gray-200" : "text-gray-700"
             } flex items-center`}
             >
             <FaInfoCircle className="mr-2 text-blue-400" /> Items/Materials Replaced
           </h3>
           {expandedSections.itemsReplaced ? (
-            <FaChevronUp className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           ) : (
-            <FaChevronDown className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
           )}
         </div>
         <div
@@ -882,51 +887,51 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
             <table className={`w-full text-left rounded-lg overflow-hidden ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
               <thead className={`${isDarkMode ? 'bg-gray-700 text-gray-100' : 'bg-blue-100 text-blue-800'}`}>
                 <tr>
-                  <th className="p-4 border-b-2 border-r-2 rounded-tl-lg">Action</th>
-                  <th className="p-4 border-b-2 border-r-2">Materials No</th>
-                  <th className="p-4 border-b-2 border-r-2">Materials</th>
-                  <th className="p-4 border-b-2 rounded-tr-lg">Quantity</th>
+                  <th className="p-2 sm:p-4 border-b-2 border-r-2 rounded-tl-lg text-xs sm:text-sm md:text-base">Action</th>
+                  <th className="p-2 sm:p-4 border-b-2 border-r-2 text-xs sm:text-sm md:text-base">Materials No</th>
+                  <th className="p-2 sm:p-4 border-b-2 border-r-2 text-xs sm:text-sm md:text-base">Materials</th>
+                  <th className="p-2 sm:p-4 border-b-2 rounded-tr-lg text-xs sm:text-sm md:text-base">Quantity</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, index) => (
                   <tr key={index} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${index % 2 === 0 ? (isDarkMode ? 'bg-gray-800' : 'bg-white') : (isDarkMode ? 'bg-gray-800/70' : 'bg-gray-50')}`}>
-                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} text-center`}>
+                    <td className={`p-2 sm:p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} text-center`}>
                       {isEditing && items.length > 1 && (
                         <button
                           onClick={() => handleDeleteRow(index)}
                           className="text-red-500 hover:text-red-700 transition-colors duration-200"
                           title="Delete Row"
                         >
-                          <FaTrash className="text-lg" />
+                          <FaTrash className="text-base sm:text-lg" />
                         </button>
                       )}
                     </td>
-                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <td className={`p-2 sm:p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <input
                         type="text"
                         value={item.materialsNo}
                         onChange={(e) => handleItemChange(index, "materialsNo", e.target.value)}
                         readOnly={!isEditing}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                        className={`w-full px-2 py-1 sm:px-3 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
                     </td>
-                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <td className={`p-2 sm:p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <input
                         type="text"
                         value={item.materials}
                         readOnly={!isEditing}
                         onChange={(e) => handleItemChange(index, "materials", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                        className={`w-full px-2 py-1 sm:px-3 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
                     </td>
-                    <td className={`p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <td className={`p-2 sm:p-4 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <input
                         type="number"
                         value={item.quantity}
                         readOnly={!isEditing}
                         onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                        className={`w-full px-2 py-1 sm:px-3 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
                     </td>
                   </tr>
@@ -938,13 +943,14 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
       </section>
 
       {/* Submit Button */}
-      <div className="flex justify-end mt-8">
+      <div className="flex justify-end mt-6 sm:mt-8">
         {isEditing && (
           <button
             onClick={handleSubmit}
-            className={`px-8 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+            className={`px-4 py-2 sm:px-8 sm:py-3 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg transition-all duration-300 flex items-center transform hover:scale-105 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
           >
-            <FaCheck className="mr-3 text-lg" /> {jobCardId ? "Update Job Card" : "Create Job Card"}
+            <FaCheck className="mr-2 sm:mr-3 text-base sm:text-lg" /> 
+            <span className="text-sm sm:text-base">{jobCardId ? "Update Job Card" : "Create Job Card"}</span>
           </button>
         )}
       </div>

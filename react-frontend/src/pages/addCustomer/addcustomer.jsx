@@ -4,6 +4,7 @@ import { User, Mail, Phone, Check, XCircle, Trash2, Edit, Search, Calendar, MapP
 import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
 import Notification from '../../components/Notification/Notification'; // Import the Notification component
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
+import LoadingItems from "../../components/Loading/LoadingItems";
 
 // Placeholder for ThemeContext if not available
 
@@ -129,6 +130,8 @@ const AddCustomer = () => {
 
   // Main list of all customers fetched from the API
   const [customers, setCustomers] = useState([]);
+  // Loading state for customers
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
   // Filtered list of customers based on search term
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   // Search term input
@@ -231,6 +234,7 @@ const AddCustomer = () => {
   // Fetches customer data from the API
   const fetchCustomers = async () => {
     try {
+      setLoadingCustomers(true);
       // In a real application, replace with a fetch to your actual backend.
       const response = await fetch("/api/customers"); // Replace with your actual API endpoint
       if (!response.ok) {
@@ -261,6 +265,8 @@ const AddCustomer = () => {
     } catch (error) {
       console.error("Error fetching customers:", error);
       setErrorMessage("Failed to fetch customers: " + error.message);
+    } finally {
+      setLoadingCustomers(false);
     }
   };
 
@@ -760,7 +766,11 @@ const AddCustomer = () => {
       {/* Customer List Display Section - Now using CustomerCard */}
       <div className={`${isDarkMode ? "bg-gray-900 border border-gray-800" : "bg-white border border-gray-200"} rounded-xl p-6 shadow-lg mb-6`}>
         <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Existing Customers</h2>
-        {filteredCustomers.length === 0 ? (
+        {loadingCustomers ? (
+          <div className="flex justify-center items-center my-8">
+            <LoadingItems isDarkMode={isDarkMode} />
+          </div>
+        ) : filteredCustomers.length === 0 ? (
           <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>No customers found. Try adding some or adjusting your search.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

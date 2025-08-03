@@ -8,6 +8,7 @@ import UserProfileIcon from "../../components/UserProfileIcon/UserProfileIcon";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import LoadingItems from "../../components/Loading/LoadingItems";
 
+
 // A centralized place for API calls
 const API_BASE_URL = "http://localhost:8000/api";
 
@@ -171,6 +172,7 @@ const AddUser = () => {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [notification, setNotification] = useState({ message: '', type: 'success' });
 
   const authToken = localStorage.getItem('authToken');
 
@@ -186,7 +188,7 @@ const AddUser = () => {
 
   const fetchCurrentUser = async () => {
     if (!authToken) {
-      toast.error("Authentication token not found. Please log in.");
+      setNotification({ message: "Authentication token not found. Please log in.", type: 'error' });
       return;
     }
     try {
@@ -195,13 +197,13 @@ const AddUser = () => {
       });
       setCurrentUserId(response.data.id);
     } catch (error) {
-      toast.error("Failed to fetch current user info.");
+      setNotification({ message: "Failed to fetch current user info.", type: 'error' });
     }
   };
 
   const fetchUsers = async () => {
     if (!authToken) {
-      toast.error("Authentication token not found. Please log in.");
+      setNotification({ message: "Authentication token not found. Please log in.", type: 'error' });
       return;
     }
     setLoadingUsers(true);
@@ -214,7 +216,7 @@ const AddUser = () => {
       setUsers(filteredUsers);
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
-      toast.error("Failed to fetch users: " + errorMessage);
+      setNotification({ message: "Failed to fetch users: " + errorMessage, type: 'error' });
     } finally {
       setLoadingUsers(false);
     }
@@ -243,12 +245,12 @@ const AddUser = () => {
     setIsSubmitting(true);
 
     if (!authToken) {
-      toast.error("Authentication token not found. Please log in.");
+      setNotification({ message: "Authentication token not found. Please log in.", type: 'error' });
       setIsSubmitting(false);
       return;
     }
     if (!formData.fullname.trim() || !formData.username.trim() || !formData.email.trim() || !formData.password.trim() || !formData.role.trim()) {
-      toast.error("All required fields must be filled.");
+      setNotification({ message: "All required fields must be filled.", type: 'error' });
       setIsSubmitting(false);
       return;
     }
@@ -263,7 +265,7 @@ const AddUser = () => {
           }
         }
       );
-      toast.success(response.data.message || `User ${formData.fullname || formData.email} added successfully!`);
+      setNotification({ message: response.data.message || `User ${formData.fullname || formData.email} added successfully!`, type: 'success' });
       setFormData({
         fullname: "",
         username: "",
@@ -276,7 +278,7 @@ const AddUser = () => {
       fetchUsers();
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || "An unexpected error occurred.";
-      toast.error(`Error: ${errorMessage}`);
+      setNotification({ message: `Error: ${errorMessage}`, type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -298,7 +300,7 @@ const AddUser = () => {
   const handleConfirmAction = async () => {
     setShowConfirmModal(false);
     if (!authToken) {
-      toast.error("Authentication token not found. Please log in.");
+      setNotification({ message: "Authentication token not found. Please log in.", type: 'error' });
       handleCancelAction();
       return;
     }
@@ -315,11 +317,11 @@ const AddUser = () => {
             }
           }
         );
-        toast.success(response.data.message || "Role updated successfully!");
+        setNotification({ message: response.data.message || "Role updated successfully!", type: 'success' });
         fetchUsers();
       } catch (error) {
         const errorMessage = error.response?.data?.message || `Error updating role: ${error.message}`;
-        toast.error(errorMessage);
+        setNotification({ message: errorMessage, type: 'error' });
       }
     } else if (modalAction === 'delete' && selectedUser) {
       try {
@@ -331,11 +333,11 @@ const AddUser = () => {
             }
           }
         );
-        toast.success(response.data.message || "User deleted successfully!");
+        setNotification({ message: response.data.message || "User deleted successfully!", type: 'success' });
         fetchUsers();
       } catch (error) {
         const errorMessage = error.response?.data?.message || `Error deleting user: ${error.message}`;
-        toast.error(errorMessage);
+        setNotification({ message: errorMessage, type: 'error' });
       }
     }
     handleCancelAction();
@@ -531,6 +533,11 @@ const AddUser = () => {
           </div>
         )}
       </section>
+      <Notification 
+        message={notification.message} 
+        type={notification.type} 
+        onClose={() => setNotification({ message: '', type: 'success' })} 
+      />
     </div>
   );
 };

@@ -305,7 +305,7 @@ const AddItem = () => {
         <div
             className={`${
                 isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-            } space-y-8 p-6 min-h-screen flex flex-col`}
+            } space-y-6 p-4 sm:p-6 min-h-screen flex flex-col`}
         >
             {notification.message && (
                 <Notification

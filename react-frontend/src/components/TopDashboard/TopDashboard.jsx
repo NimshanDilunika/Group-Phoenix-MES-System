@@ -1,25 +1,18 @@
 // src/components/TopDashboard.jsx
-
-import React, { useContext, useState, useRef, useEffect, useCallback } from "react";
+// Refactored for a more robust and flexible responsive design
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { ThemeContext } from "../ThemeContext/ThemeContext";
 import { BsSearch } from "react-icons/bs";
 import { FaSun } from 'react-icons/fa';
 import { BiBell, BiUserCircle } from "react-icons/bi";
-import { MdDarkMode } from "react-icons/md";
+import { MdDarkMode, MdMenu } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import { CompanySettingsContext } from '../../context/CompanySettingsContext';
 import axios from 'axios';
-import PropTypes from 'prop-types';
 
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
-// PropTypes for the component's props, a best practice for a senior engineer
-TopDashboard.propTypes = {
-  onMobileMenuToggle: PropTypes.func, // Optional prop to integrate with a mobile sidebar toggle
-};
-
-const TopDashboard = ({ onMobileMenuToggle }) => {
+const TopDashboard = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const { companyName: contextCompanyName, isLoadingSettings } = useContext(CompanySettingsContext);
   const navigate = useNavigate();
@@ -27,30 +20,25 @@ const TopDashboard = ({ onMobileMenuToggle }) => {
   const notificationCount = 5;
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const [userFullName, setUserFullName] = useState('Loading...');
   const [userProfileImageUrl, setUserProfileImageUrl] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [userDataError, setUserDataError] = useState(null);
 
-  const isValidProfileImage = (url) => typeof url === 'string' && url.length > 0;
+  const isValidProfileImage = (url) => !!url;
 
   const toggleProfile = () => {
-    setIsProfileOpen(prev => !prev);
-  };
-  
-  const toggleSearch = () => {
-    setIsSearchVisible(prev => !prev);
+    setIsProfileOpen(!isProfileOpen);
   };
 
-  const handleClickOutside = useCallback((event) => {
+  const handleClickOutside = (event) => {
     if (profileRef.current && !profileRef.current.contains(event.target)) {
       setIsProfileOpen(false);
     }
-  }, []);
+  };
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserData = async () => {
     setIsLoadingUser(true);
     setUserDataError(null);
     try {
@@ -111,18 +99,18 @@ const TopDashboard = ({ onMobileMenuToggle }) => {
     } finally {
       setIsLoadingUser(false);
     }
-  }, [navigate]);
+  };
 
   useEffect(() => {
     fetchUserData();
-  }, [fetchUserData]);
+  }, [navigate]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [handleClickOutside]);
+  }, []);
 
   useEffect(() => {
     const handleProfileUpdate = () => {
@@ -132,161 +120,131 @@ const TopDashboard = ({ onMobileMenuToggle }) => {
     return () => {
       window.removeEventListener('userProfileUpdated', handleProfileUpdate);
     };
-  }, [fetchUserData]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       fetchUserData();
-    }, REFRESH_INTERVAL_MS);
+    }, 5 * 60 * 1000); // 5 minutes
     return () => clearInterval(interval);
-  }, [fetchUserData]);
-
-  const commonIconClass = "text-xl sm:text-2xl transition-colors duration-200";
-  const iconButtonClass = "p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  }, []);
 
   return (
     <>
       <header
-        className={`flex items-center justify-between p-3 sm:p-4 shadow-md transition-all duration-300 ${
+        className={`flex flex-wrap items-center justify-between p-3 sm:p-4 shadow-md transition-all duration-300 ${
           isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"
         }`}
-        role="banner"
       >
-        {/* Mobile Menu Toggle Button (Optional, depends on full layout) */}
-        {onMobileMenuToggle && (
-          <button 
-            onClick={onMobileMenuToggle} 
-            className={`${iconButtonClass} lg:hidden`}
-            aria-label="Open main menu"
-          >
-            <MdMenu className={`${commonIconClass} text-black dark:text-white`} />
-          </button>
-        )}
-
         {/* Company Name / Logo */}
-        <div className="flex-shrink-0 mr-4">
-          <Link to="/" className="text-xl md:text-2xl font-semibold whitespace-nowrap">
+        <div className="flex-shrink-0">
+          <Link to="/" className="text-xl md:text-2xl font-semibold">
             {isLoadingSettings ? "Loading..." : (contextCompanyName || "Magma Engineering Solutions (Pvt) Ltd")}
           </Link>
         </div>
 
-        {/* Search Bar & Actions */}
-        <div className="flex-grow flex items-center justify-end flex-wrap gap-2 sm:gap-4 md:gap-6">
-          {/* Responsive Search Input */}
-          <div className="relative flex-grow-0 sm:flex-grow">
-            <button
-              onClick={toggleSearch}
-              className={`${iconButtonClass} sm:hidden`}
-              aria-label="Toggle search input"
-              aria-expanded={isSearchVisible}
-            >
-              <BsSearch className={`${commonIconClass} ${isDarkMode ? "text-white" : "text-black"}`} />
-            </button>
-
-            <div className={`
-                absolute top-0 right-0 sm:static
-                ${isSearchVisible ? 'w-full flex' : 'hidden'} 
-                sm:flex items-center rounded-full border-2 transition-all duration-300
-                ${isDarkMode
-                  ? "bg-gray-800 border-gray-500 hover:border-blue-500 focus-within:ring-2 focus-within:ring-blue-300"
-                  : "bg-gray-100 border-gray-400 hover:border-blue-400 focus-within:ring-2 focus-within:ring-blue-300"
-                } max-w-xs md:max-w-sm
-              `}>
-              <BsSearch className={`text-lg ml-3 transition-all ${isDarkMode ? "text-white" : "text-black"}`} />
-              <input
-                className={`transition-all duration-300 bg-transparent outline-none ml-2 flex-grow h-6 text-sm
-                  ${isDarkMode ? "text-white placeholder-gray-400" : "text-black placeholder-gray-500"}`}
-                type="text"
-                placeholder="Search..."
-                aria-label="Search dashboard"
-              />
-            </div>
+        {/* This container will hold the search bar and icons and will wrap on smaller screens */}
+        <div className="flex-grow flex items-center justify-end flex-wrap mt-3 sm:mt-0 gap-4 sm:gap-6">
+          {/* Search bar, responsive width */}
+          <div
+            className={`flex items-center p-2 rounded-full border-2 transition-all duration-300 w-full sm:w-auto max-w-xs md:max-w-md
+              ${isDarkMode
+                ? "bg-gray-800 border-gray-500 hover:border-blue-500 focus-within:ring-2 focus-within:ring-blue-300"
+                : "bg-gray-100 border-gray-400 hover:border-blue-400 focus-within:ring-2 focus-within:ring-blue-300"
+              }`}
+          >
+            <BsSearch className={`text-lg transition-all ${isDarkMode ? "text-white" : "text-black"}`} />
+            <input
+              className={`transition-all duration-300 bg-transparent outline-none ml-2 flex-grow h-6 text-sm
+                ${isDarkMode ? "text-white placeholder-gray-400" : "text-black placeholder-gray-500"}`}
+              type="text"
+              placeholder="Search..."
+            />
           </div>
           
           {/* Icon group */}
-          <nav className="flex items-center gap-2 sm:gap-4" aria-label="Utility navigation">
+          <div className="flex items-center gap-4 sm:gap-6">
             {/* Theme Toggle Button */}
             <button 
               onClick={toggleTheme}
-              className={iconButtonClass}
+              className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
               aria-label="Toggle dark mode"
             >
               {isDarkMode ? (
-                <FaSun className={`${commonIconClass} text-white`} />
+                <FaSun className="text-xl text-white" />
               ) : (
-                <MdDarkMode className={`${commonIconClass} text-black`} />
+                <MdDarkMode className="text-xl text-black" />
               )}
             </button>
             
             {/* Notifications */}
-            <button className={`${iconButtonClass} relative`} aria-label="Show notifications">
-              <BiBell className={`${commonIconClass} ${isDarkMode ? "text-white" : "text-black"}`} />
+            <div className="relative cursor-pointer group">
+              <BiBell className={`text-xl sm:text-2xl transition-all duration-300 ${isDarkMode ? "text-white" : "text-black"}`} />
               {notificationCount > 0 && (
-                <span className={`absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-xs rounded-full p-1 leading-none ${
-                  isDarkMode ? "bg-red-500 text-white" : "bg-red-500 text-white"
-                }`} aria-label={`${notificationCount} new notifications`}>
+                <sup
+                  className={`absolute -top-1 -right-1 text-xs rounded-full px-1.5 py-0.5 ${
+                    isDarkMode ? "bg-red-500 text-white" : "bg-red-500 text-white"
+                  }`}
+                >
                   {notificationCount}
-                </span>
+                </sup>
               )}
-            </button>
+            </div>
 
             {/* Profile Dropdown */}
             <div className="relative" ref={profileRef}>
               <button 
                 onClick={toggleProfile} 
-                className={`flex items-center gap-2 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                aria-haspopup="menu"
+                className="flex items-center gap-2"
                 aria-expanded={isProfileOpen}
+                aria-controls="profile-menu"
               >
                 {isLoadingUser ? (
                   <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse"></div>
                 ) : isValidProfileImage(userProfileImageUrl) ? (
                   <img
                     src={userProfileImageUrl}
-                    alt={`${userFullName}'s profile`}
+                    alt="Profile"
                     className="rounded-full object-cover border border-gray-400 w-8 h-8"
                     onError={() => setUserProfileImageUrl(null)}
                   />
                 ) : (
-                  <BiUserCircle className={`text-2xl ${isDarkMode ? "text-white" : "text-black"}`} />
+                  <BiUserCircle className={`text-xl sm:text-2xl ${isDarkMode ? "text-white" : "text-black"}`} />
                 )}
                 
                 <span className={`hidden md:inline transition-all duration-300 text-sm font-medium ${isDarkMode ? "text-white" : "text-black"}`}>
                   {isLoadingUser ? 'Loading...' : userFullName}
                   {userDataError && (
-                    <span className="text-red-500 text-xs ml-1" title={userDataError} role="status">⚠</span>
+                    <span className="text-red-500 text-xs ml-1" title={userDataError}>⚠</span>
                   )}
                 </span>
               </button>
               
               {isProfileOpen && (
                 <div 
-                  className={`absolute top-full right-0 mt-2 w-48 rounded-md shadow-xl border ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-gray-200 text-gray-800 border-gray-300'} z-10`}
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="profile-button"
+                  id="profile-menu"
+                  className={`absolute top-full right-0 mt-2 w-40 sm:w-48 rounded-md shadow-xl border ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-gray-200 text-gray-800 border-gray-300'} z-10`}
                 >
-                  <Link to="/dashboard/profile" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} role="menuitem">
+                  <Link to="/dashboard/profile" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                     Profile
                   </Link>
-                  <Link to="/dashboard/ProfileSettings" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} role="menuitem">
+                  <Link to="/dashboard/ProfileSettings" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                     Settings
                   </Link>
                   <button 
                     onClick={fetchUserData}
                     className={`block w-full text-left px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}
-                    role="menuitem"
                   >
                     Refresh Data
                   </button>
                   <hr className={`${isDarkMode ? 'border-gray-700' : 'border-gray-300'} my-2`} />
-                  <Link to="/logout" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} role="menuitem">
+                  <Link to="/logout" className={`block px-4 py-2 text-sm hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                     Log Out
                   </Link>
                 </div>
               )}
             </div>
-          </nav>
+          </div>
         </div>
       </header>
       <hr className={`border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`} />

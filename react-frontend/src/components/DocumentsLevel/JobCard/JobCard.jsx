@@ -608,7 +608,6 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
                   readOnly={!isEditing}
                   className={`w-full px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
                 />
-                <FaCalendarAlt className={`absolute right-3 sm:right-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
               </div>
               <div className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-base sm:text-lg font-bold ${isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
                 Job Card No: {jobCardId || "N/A"}

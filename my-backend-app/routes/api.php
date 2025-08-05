@@ -14,6 +14,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\JobCardController;
 use App\Http\Controllers\Api\JobHomeController;
+use App\Http\Controllers\Api\ImageUploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,3 +110,7 @@ Route::get('/job-homes', [JobHomeController::class, 'index']);
 Route::get('/job-homes/{id}', [JobHomeController::class, 'show']);
 Route::post('/job-homes', [JobHomeController::class, 'store']);
 Route::put('/job-homes/{id}', [JobHomeController::class, 'update']);
+
+Route::post('/job-homes/{id}/images', [ImageUploadController::class, 'store']);
+Route::get('job-homes/{Id}/images', [ImageUploadController::class, 'getImages']);
+Route::delete('job-homes/{jobHomeId}/images/{imageId}', [ImageUploadController::class, 'destroy']);

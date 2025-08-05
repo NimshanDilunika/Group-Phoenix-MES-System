@@ -234,7 +234,10 @@ const JobHome = ({ onGoBack, job }) => {
           {/* CONTENT AREA */}
           <div className="p-4 sm:p-6 overflow-y-auto max-h-[75vh]">
             {showCancelJob && <CancelJobPage jobs={[jobData?.job_home]} jobId={jobData?.job_home?.id} />}
-            {showImageUpload && <ImageUpload />}
+            {showImageUpload && (
+              // FIX: Pass the jobHomeId prop here
+              <ImageUpload jobHomeId={jobData?.job_home?.id} />
+            )}
             {showPayment && <PaymentPage />}
             {showMessages && <MessagePage onClose={() => setShowMessages(false)} />}
           </div>

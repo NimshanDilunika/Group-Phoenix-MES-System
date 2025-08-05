@@ -122,6 +122,7 @@ const TopDashboard = () => {
         };
     }, []);
 
+    console.log("Rendering TopDashboard with userFullName:", userFullName, "and profileImageUrl:", userProfileImageUrl);
     useEffect(() => {
         const interval = setInterval(() => {
             fetchUserData();

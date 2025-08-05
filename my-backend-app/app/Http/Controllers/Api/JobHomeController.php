@@ -83,8 +83,8 @@ class JobHomeController extends Controller
             'job_card' => $jobHome->jobCard
         ]);
     }
-       public function index()
+    public function index()
     {
-        return JobHome::with('jobCard')->get();
+        return JobHome::with(['jobCard', 'customer'])->get();
     }
 }

@@ -72,7 +72,9 @@ const Home = () => {
         const formattedJobs = response.data.map(job => ({
           id: job.id,
           title: job.job_type || "Untitled Job",
-          company: job.customer?.name || "Unknown Company",
+          customerName: job.job_card?.customer_name || "Unknown Customer",
+          area: job.job_card?.area || "Unknown Area",
+          branch: job.job_card?.branch_sc || "Unknown Branch",
           date: job.created_at ? new Date(job.created_at).toLocaleDateString() : "N/A",
           status: job.job_status ? job.job_status.trim() : "",
           service: job.job_type,
@@ -142,11 +144,56 @@ const Home = () => {
 
   const [selectedService, setSelectedService] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredJobs = jobs.filter(job => {
     const matchesService = selectedService ? job.service === selectedService : true;
     const matchesStatus = selectedStatus ? job.status === selectedStatus : true;
-    return matchesService && matchesStatus;
+    const matchesSearch = searchTerm ? 
+      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.branch.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+    return matchesService && matchesStatus && matchesSearch;
+  }).sort((a, b) => {
+    if (!searchTerm) return 0;
+    
+    const searchLower = searchTerm.toLowerCase();
+    const aTitle = a.title.toLowerCase();
+    const bTitle = b.title.toLowerCase();
+    const aCustomer = a.customerName.toLowerCase();
+    const bCustomer = b.customerName.toLowerCase();
+    
+    // Calculate relevance scores
+    let aScore = 0;
+    let bScore = 0;
+    
+    // Exact matches get highest priority
+    if (aTitle === searchLower) aScore += 100;
+    if (bTitle === searchLower) bScore += 100;
+    if (aCustomer === searchLower) aScore += 90;
+    if (bCustomer === searchLower) bScore += 90;
+    
+    // Starts with search term gets high priority
+    if (aTitle.startsWith(searchLower)) aScore += 80;
+    if (bTitle.startsWith(searchLower)) bScore += 80;
+    if (aCustomer.startsWith(searchLower)) aScore += 70;
+    if (bCustomer.startsWith(searchLower)) bScore += 70;
+    
+    // Contains search term gets medium priority
+    if (aTitle.includes(searchLower)) aScore += 60;
+    if (bTitle.includes(searchLower)) bScore += 60;
+    if (aCustomer.includes(searchLower)) aScore += 50;
+    if (bCustomer.includes(searchLower)) bScore += 50;
+    
+    // Area and branch matches get lower priority
+    if (a.area.toLowerCase().includes(searchLower)) aScore += 40;
+    if (b.area.toLowerCase().includes(searchLower)) bScore += 40;
+    if (a.branch.toLowerCase().includes(searchLower)) aScore += 30;
+    if (b.branch.toLowerCase().includes(searchLower)) bScore += 30;
+    
+    return bScore - aScore; // Sort by highest score first
   });
 
   const indexOfLastJob = currentPage * jobsPerPage;
@@ -191,6 +238,7 @@ const Home = () => {
   const clearFilters = () => {
     setSelectedStatus(null);
     setSelectedService(null);
+    setSearchTerm("");
     setCurrentPage(1);
   };
 
@@ -255,60 +303,90 @@ const Home = () => {
               Filter and manage your service jobs efficiently.
             </p>
           </div>
-          {(userRole === 'Administrator' || userRole === 'Tecnical_Head' || userRole === 'Manager') && (
-            <div className="relative inline-block text-left create-job-dropdown-container w-full sm:w-auto">
-              <button
-                type="button"
+       
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="relative w-full sm:w-64">
+              <input
+                type="text"
+                placeholder="Search jobs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className={`
-                  w-full justify-center sm:w-auto
-                  ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-500 text-white hover:bg-blue-400'}
-                  px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md flex items-center
+                  w-full px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md
+                  ${isDarkMode 
+                    ? 'bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' 
+                    : 'bg-white border border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500'
+                  }
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
                 `}
-                onClick={handleDropdownToggle}
-                aria-haspopup="true"
-                aria-expanded={isDropdownOpen}
-              >
-                <IoIosAddCircle className="inline-block mr-2 text-lg" />
-                <span>Create Job Card</span>
-                <MdArrowDropDown className={`ml-1 text-xl transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
-              </button>
-              {isDropdownOpen && (
-                <div
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
                   className={`
-                    ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}
-                    absolute right-0 mt-2 w-full sm:w-56 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10
+                    absolute right-3 top-1/2 transform -translate-y-1/2 text-sm
+                    ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}
                   `}
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="menu-button"
-                  tabIndex="-1"
                 >
-                  <div className="py-1" role="none">
-                    {items.length === 0 ? (
-                      <div className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} px-4 py-2 text-sm`}>
-                        No services available.
-                      </div>
-                    ) : (
-                      items.map(item => (
-                        <button
-                          key={item.id}
-                          className={`
-                            ${isDarkMode ? 'text-gray-200 hover:bg-blue-600 hover:text-white' : 'text-gray-700 hover:bg-blue-500 hover:text-white'}
-                            block w-full text-left px-4 py-2 text-sm transition-colors duration-200
-                          `}
-                          role="menuitem"
-                          tabIndex="-1"
-                          onClick={() => handleCreateJobCardClick(item.name)}
-                        >
-                          {item.name}
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
+                  ×
+                </button>
               )}
             </div>
-          )}
+            {(userRole === 'Administrator' || userRole === 'Tecnical_Head' || userRole === 'Manager') && (
+              <div className="relative inline-block text-left create-job-dropdown-container w-full sm:w-auto">
+                <button
+                  type="button"
+                  className={`
+                    w-full justify-center sm:w-auto
+                    ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-500 text-white hover:bg-blue-400'}
+                    px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md flex items-center
+                  `}
+                  onClick={handleDropdownToggle}
+                  aria-haspopup="true"
+                  aria-expanded={isDropdownOpen}
+                >
+                  <IoIosAddCircle className="inline-block mr-2 text-lg" />
+                  <span>Create Job Card</span>
+                  <MdArrowDropDown className={`ml-1 text-xl transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+                </button>
+                {isDropdownOpen && (
+                  <div
+                    className={`
+                      ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}
+                      absolute right-0 mt-2 w-full sm:w-56 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10
+                    `}
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-labelledby="menu-button"
+                    tabIndex="-1"
+                  >
+                    <div className="py-1" role="none">
+                      {items.length === 0 ? (
+                        <div className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} px-4 py-2 text-sm`}>
+                          No services available.
+                        </div>
+                      ) : (
+                        items.map(item => (
+                          <button
+                            key={item.id}
+                            className={`
+                              ${isDarkMode ? 'text-gray-200 hover:bg-blue-600 hover:text-white' : 'text-gray-700 hover:bg-blue-500 hover:text-white'}
+                              block w-full text-left px-4 py-2 text-sm transition-colors duration-200
+                            `}
+                            role="menuitem"
+                            tabIndex="-1"
+                            onClick={() => handleCreateJobCardClick(item.name)}
+                          >
+                            {item.name}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -428,11 +506,33 @@ const Home = () => {
                 onClick={() => handleJobClick(job)}
                 tabIndex="0"
                 role="button"
-              >
-                <div className="flex flex-col mb-2 sm:mb-0">
-                  <p className="text-lg font-bold">{job.title}</p>
-                  <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm`}>{job.company}</span>
-                </div>
+                                >
+                  <div className="flex flex-col flex-1 m-0  p-0  leading-none">
+                    <p className="text-lg font-bold m-0.5 p-0 leading-none">{job.title}</p>
+
+                    {/* First line: customer name */}
+                    <div className="mt-0">
+                      <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-sm font-medium leading-none`}>
+                        {job.customerName}
+                      </span>
+                    </div>
+
+                    {/* Second line: area | branch */}
+                    <div className="flex items-center gap-1 mt-0">
+                      <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-sm leading-none`}>
+                        {job.area}
+                      </span>
+                      <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm leading-none`}>
+                        ||
+                      </span>
+                      <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-sm leading-none`}>
+                        {job.branch}
+                      </span>
+                    </div>
+                  </div>
+
+
+
                 <div className="flex items-center gap-4 text-sm sm:text-base">
                   <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} whitespace-nowrap`}>📅 {job.date}</span>
                   {CurrentStatusIcon && (

@@ -5,14 +5,33 @@ import { ThemeContext } from "../../ThemeContext/ThemeContext";
 import axios from "axios"; // Ensure axios is imported for data fetching
 import Notification from '../../Notification/Notification';
 import { useAuth } from '../../../pages/hooks/useAuth';
+import { Calendar } from "../../Calender/Calendar";
+import dayjs from "dayjs";
 
 const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
   const { isDarkMode } = useContext(ThemeContext);
   const [jobCardId, setJobCardId] = useState(initialJobCardId || null);
   const [isEditing, setIsEditing] = useState(false); // Start in view mode
-  const [selectedDate, setSelectedDate] = useState(""); // Initialize with empty string, will be set on fetch or current date
+  // Initialize with the current date, formatted for consistency.
+  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
+  
+  // New state to control the calendar's visibility.
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
   const { userRole, isLoading } = useAuth();
   
+  // Add an effect to handle initial `jobCardId` from props, if needed.
+  useEffect(() => {
+      if (initialJobCardId) {
+          setJobCardId(initialJobCardId);
+      }
+  }, [initialJobCardId]);
+
+  // Handler for when a day is clicked in the calendar.
+  const handleDateChange = (newDate) => {
+    setSelectedDate(newDate);
+    setIsCalendarOpen(false); // Automatically close the calendar after selection.
+  };
   // Check if user has permission to edit job cards
   const canEditJobCards = userRole === 'Administrator' || userRole === 'Tecnical_Head' || userRole === 'Manager';
   // For technicians, they can create new job cards but not edit existing ones
@@ -573,106 +592,155 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
         </div>
       </div>
 
-      {/* Customer Information Section */}
-      <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
-        <div
-          className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
-          onClick={() => toggleSection('customerInfo')}
+      <section
+      className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl relative ${
+        isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'
+      }`}
+    >
+      <div
+        className="flex justify-between items-center cursor-pointer mb-4 sm:mb-6"
+        onClick={() => toggleSection('customerInfo')}
+      >
+        <h3
+          className={`text-xl sm:text-2xl font-semibold ${
+            isDarkMode ? 'text-gray-200' : 'text-gray-700'
+          } flex items-center`}
         >
-          <h3
-            className={`text-xl sm:text-2xl font-semibold ${
-              isDarkMode ? "text-gray-200" : "text-gray-700"
-            } flex items-center`}
-            >
-            <FaInfoCircle className="mr-2 text-blue-400" /> Customer Information
-          </h3>
-          {expandedSections.customerInfo ? (
-            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-          ) : (
-            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-          )}
-        </div>
-        <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.customerInfo ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
-          style={{ maxHeight: expandedSections.customerInfo ? '1000px' : '0' }} // A large enough value
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {/* Date Picker */}
-            <div className="col-span-full mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-              <label className={`font-semibold text-base sm:text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date:</label>
-              <div className="relative flex items-center w-full sm:w-auto flex-grow">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => isEditing && setSelectedDate(e.target.value)}
-                  readOnly={!isEditing}
-                  className={`w-full px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                />
-              </div>
-              <div className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-base sm:text-lg font-bold ${isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
-                Job Card No: {jobCardId || "N/A"}
-              </div>
-            </div>
+          <FaInfoCircle className="mr-2 text-blue-400" /> Customer Information
+        </h3>
+        {expandedSections.customerInfo ? (
+          <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+        ) : (
+          <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+        )}
+      </div>
 
-            {/* Customer Name */}
-            <div>
-              <label htmlFor="customer_name" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Customer Name:</label>
-              <select
-                id="customer_name"
-                name="customer_name"
-                value={fields.customer_name}
-                onChange={handleFieldChange}
-                disabled={!isEditing}
-                className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+      {isEditing && isCalendarOpen && (
+        <div className="absolute z-50 top-24 left-0 w-full flex justify-center px-4 sm:px-6 md:px-8">
+          <Calendar
+            value={selectedDate}
+            onChange={handleDateChange}
+            onClose={() => setIsCalendarOpen(false)}
+          />
+        </div>
+      )}
+
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          expandedSections.customerInfo ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+        }`}
+        style={{ maxHeight: expandedSections.customerInfo ? '1000px' : '0' }}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="col-span-full mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+            <label className={`font-semibold text-base sm:text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Date:
+            </label>
+            <div className="relative flex items-center w-full sm:w-auto flex-grow">
+              <div
+                onClick={() => isEditing && setIsCalendarOpen(!isCalendarOpen)}
+                className={`w-full px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border-2 cursor-pointer
+                ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}
+                focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200
+                ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
               >
-                <option value="">Select Customer</option>
-                {customers.map((customer) => (
-                  <option key={customer.id} value={customer.customer_name}>
-                    {customer.customer_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Other Customer Fields */}
-            {[
-              { name: "area", label: "Area", type: "select", options: areas.map(a => ({ value: a.areaName, label: a.areaName })) },
-              { name: "branch_sc", label: "Branch/SC", type: "select", options: branches.map(b => ({ value: b.branchName, label: b.branchName })) },
-              { name: "contact_number", label: "Contact Number" },
-              { name: "contact_person", label: "Contact Person" },
-            ].map((field) => (
-              <div key={field.name}>
-                <label htmlFor={field.name} className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{field.label}:</label>
-                {field.type === "select" ? (
-                  <select
-                    id={field.name}
-                    name={field.name}
-                    value={fields[field.name]}
-                    onChange={handleFieldChange}
-                    disabled={!isEditing}
-                    className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                  >
-                    <option value="">{`Select ${field.label}`}</option>
-                    {field.options.map(option => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    id={field.name}
-                    name={field.name}
-                    value={fields[field.name]}
-                    onChange={handleFieldChange}
-                    readOnly={!isEditing}
-                    className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
-                  />
-                )}
+                {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : 'Select a date'}
               </div>
-            ))}
+            </div>
+            <div
+              className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-base sm:text-lg font-bold ${
+                isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
+              }`}
+            >
+              Job Card No: {jobCardId || 'N/A'}
+            </div>
           </div>
+
+          <div>
+            <label
+              htmlFor="customer_name"
+              className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+            >
+              Customer Name:
+            </label>
+            <select
+              id="customer_name"
+              name="customer_name"
+              value={fields.customer_name}
+              onChange={handleFieldChange}
+              disabled={!isEditing}
+              className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${
+                isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'
+              } ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+            >
+              <option value="">Select Customer</option>
+              {customers.map((customer) => (
+                <option key={customer.id} value={customer.customer_name}>
+                  {customer.customer_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {[
+            {
+              name: 'area',
+              label: 'Area',
+              type: 'select',
+              options: areas.map((a) => ({ value: a.areaName, label: a.areaName })),
+            },
+            {
+              name: 'branch_sc',
+              label: 'Branch/SC',
+              type: 'select',
+              options: branches.map((b) => ({ value: b.branchName, label: b.branchName })),
+            },
+            { name: 'contact_number', label: 'Contact Number' },
+            { name: 'contact_person', label: 'Contact Person' },
+          ].map((field) => (
+            <div key={field.name}>
+              <label
+                htmlFor={field.name}
+                className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+              >
+                {field.label}:
+              </label>
+              {field.type === 'select' ? (
+                <select
+                  id={field.name}
+                  name={field.name}
+                  value={fields[field.name]}
+                  onChange={handleFieldChange}
+                  disabled={!isEditing}
+                  className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${
+                    isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'
+                  } ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                >
+                  <option value="">{`Select ${field.label}`}</option>
+                  {field.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  id={field.name}
+                  name={field.name}
+                  value={fields[field.name]}
+                  onChange={handleFieldChange}
+                  readOnly={!isEditing}
+                  className={`w-full border rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 ${
+                    isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'
+                  } ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                />
+              )}
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* Job Card Details Section */}
       <section className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>

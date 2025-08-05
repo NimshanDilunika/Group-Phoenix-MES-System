@@ -16,6 +16,7 @@
     "@mui/material": "^6.4.10",
     "@tailwindcss/vite": "^4.0.17",
     "axios": "^1.11.0",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "firebase": "^11.9.1",
     "framer-motion": "^12.23.12",

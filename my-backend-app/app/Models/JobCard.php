@@ -45,7 +45,9 @@ class JobCard extends Model
 
     public function items()
     {
-        return $this->hasMany(JobItem::class);
+        // Items are related through job_home_id, not directly to job_card
+        // This relationship is not used in the current implementation
+        return $this->hasMany(JobItem::class, 'job_home_id', 'job_home_id');
     }
      public function jobHome()
     {

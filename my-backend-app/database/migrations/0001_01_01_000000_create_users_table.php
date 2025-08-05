@@ -18,9 +18,17 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('idnumber')->unique();
-            $table->integer('phoneno');
-            $table->enum('role', ['Administrator', 'Manager','Staff'])->default('Staff');
+            
+            // Consider making 'idnumber' nullable if not every user will have one,
+            // and remove unique() if it's not strictly unique for all users.
+            $table->string('idnumber')->nullable(); 
+            
+            // It's generally safer to use string for phone numbers to allow for
+            // international formats, dashes, or other characters.
+            $table->string('phoneno'); 
+
+            // THIS LINE IS ALREADY CORRECTLY UPDATED WITH THE NEW ROLES:
+            $table->enum('role', ['Administrator','Tecnical_Head', 'Manager', 'Technician'])->default('Technician');
 
             // --- ADD THESE NEW COLUMNS FOR PROFILE IMAGE ---
             $table->longText('profile_image')->nullable(); // For base64 encoded image data

@@ -20,10 +20,10 @@ const ProgressBar = ({ currentStatus, isDarkMode }) => {
   const currentProgressPercentage = statuses[currentStatusIndex]?.progress || 0;
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="relative flex justify-between items-center w-full mb-4">
+    <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-2xl mx-auto px-2 sm:px-4">
+      <div className="relative flex justify-between items-center w-full mb-3 sm:mb-4">
         {/* The main progress line (track) */}
-        <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-2 rounded-full w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+        <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-1.5 sm:h-2 rounded-full w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
           {/* The filled part of the progress line */}
           <div
             className={`h-full rounded-full bg-blue-500 transition-all duration-700 ease-in-out`}
@@ -42,14 +42,14 @@ const ProgressBar = ({ currentStatus, isDarkMode }) => {
           return (
             <div key={status.name} className="flex flex-col items-center z-10">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold transition-all duration-500 ease-in-out transform
-                  ${isActive ? 'bg-blue-500 scale-110 shadow-lg' : (isDarkMode ? 'bg-gray-600' : 'bg-gray-400')}
-                  ${isCurrent ? 'border-4 border-blue-300' : ''}`}
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white transition-all duration-500 ease-in-out transform
+                  ${isActive ? 'bg-blue-500 scale-105 sm:scale-110 shadow-md sm:shadow-lg' : (isDarkMode ? 'bg-gray-600' : 'bg-gray-400')}
+                  ${isCurrent ? 'border-2 sm:border-4 border-blue-300' : ''}`}
                 title={status.name}
               >
-                {IconComponent && <IconComponent />} {/* Render the icon only if it exists */}
+                {IconComponent && <IconComponent className="text-sm sm:text-base md:text-xl" />} {/* Render the icon only if it exists */}
               </div>
-              <p className={`mt-2 text-center text-xs sm:text-sm font-medium whitespace-nowrap
+              <p className={`mt-1.5 sm:mt-2 text-center text-[0.6rem] xs:text-xs sm:text-sm font-medium whitespace-nowrap
                 ${isActive ? (isDarkMode ? 'text-blue-300' : 'text-blue-700') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`}>
                 {status.name}
               </p>

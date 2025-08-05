@@ -26,7 +26,7 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
             'idnumber' => 'nullable|string|max:255',
             'phoneno' => 'nullable|string|max:255',
-            'role' => ['required', Rule::in(['Administrator', 'Manager', 'Staff'])],
+            'role' => ['required', Rule::in(['Administrator','Tecnical_Head', 'Manager', 'Technician'])],
         ]);
 
         $user = new User();
@@ -48,7 +48,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validatedData = $request->validate([
-            'role' => ['required', Rule::in(['Administrator', 'Manager', 'Staff'])],
+            'role' => ['required', Rule::in(['Administrator','Tecnical_Head', 'Manager', 'Technician'])],
         ]);
 
         $user->role = $validatedData['role'];
@@ -64,5 +64,20 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json(['status' => 'success', 'message' => 'User deleted successfully']);
+    }
+
+    // Update user role by ID (for route /users/{id}/role)
+    public function updateRole(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'role' => ['required', Rule::in(['Administrator','Tecnical_Head', 'Manager', 'Technician'])],
+        ]);
+
+        $user->role = $validatedData['role'];
+        $user->save();
+
+        return response()->json(['status' => 'success', 'message' => 'User role updated successfully']);
     }
 }

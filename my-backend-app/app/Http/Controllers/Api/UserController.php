@@ -70,7 +70,7 @@ class UserController extends Controller
             'password' => 'required|string|min:8', // Require a minimum password length for security
             'idnumber' => 'nullable|string|max:255|unique:users,idnumber', // Match migration: 'idnumber'
             'phoneno' => 'nullable|string|max:20', // Match migration: 'phoneno'
-            'role' => 'required|in:Administrator,Manager,Staff', // Restrict roles to the enum values defined in migration
+            'role' => 'required|in:Administrator,Tecnical_Head,Manager,Technician', // Restrict roles to the enum values defined in migration
         ]);
         //dd($validator);
         // If validation fails, return a 422 Unprocessable Entity response with detailed errors.
@@ -156,7 +156,7 @@ class UserController extends Controller
     public function updateRole(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'role' => 'required|in:Administrator,Manager,Staff',
+            'role' => 'required|in:Administrator,Tecnical_Head,Manager,Technician',
         ]);
 
         if ($validator->fails()) {

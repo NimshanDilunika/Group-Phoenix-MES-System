@@ -11,43 +11,51 @@ class JobHomeController extends Controller
 {
      // Create JobHome with auto-generated job_no
     public function store(Request $request)
-    {
-        $request->validate([
-            'job_type' => 'required|string',
-            'customer_id' => 'nullable|exists:customers,customer_id',
-        ]);
+        {
+            $request->validate([
+                'job_type' => 'required|string',
+                'customer_id' => 'nullable|exists:customers,customer_id',
+                'job_status' => 'nullable|string',
+            ]);
 
-        // Check for existing jobhome with the same job_type
-        $existingJobHome = JobHome::where('job_type', $request->job_type)->first();
+            $jobType = trim($request->job_type); // remove extra whitespace
 
-        if ($existingJobHome) {
-            // Check if jobcard exists for this jobhome
-            $existingJobCard = JobCard::where('job_home_id', $existingJobHome->id)->first();
-            if (!$existingJobCard) {
-                // Return existing jobhome if no jobcard assigned
-                return response()->json([
-                    'job_home' => $existingJobHome,
-                    'job_card' => null,
-                ]);
+            // 🔠 Use first two letters of job_type as prefix (uppercase)
+            $prefix = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $jobType), 0, 2));
+
+            // 🔍 Find the latest job_no with this prefix
+            $lastJob = JobHome::where('job_no', 'LIKE', $prefix . '%')
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+            if ($lastJob) {
+                // Get numeric part from job_no (e.g., 00012 from GE00012)
+                $lastNumber = (int) substr($lastJob->job_no, strlen($prefix));
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
             }
+
+            // 🆕 Generate the new job number
+            $jobNo = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+            // 📌 Default status if not provided
+            $status = $request->job_status ?? 'Pending ';
+
+            $jobHome = JobHome::create([
+                'job_no' => $jobNo,
+                'job_type' => $jobType,
+                'customer_id' => $request->customer_id,
+                'job_status' => $status,
+            ]);
+
+            return response()->json([
+                'job_home' => $jobHome,
+                'job_card' => null,
+            ]);
         }
 
-        // Generate new job_no
-        $maxId = JobHome::max('id');
-        $nextId = $maxId ? $maxId + 1 : 1;
-        $jobNo = 'JOB' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
 
-        $jobHome = JobHome::create([
-            'job_no' => $jobNo,
-            'job_type' => $request->job_type,
-            'customer_id' => $request->customer_id,
-        ]);
-
-        return response()->json([
-            'job_home' => $jobHome,
-            'job_card' => null,
-        ]);
-    }
 
     // Update fields like service_start, service_end etc.
     public function update(Request $request, $id)
@@ -75,8 +83,8 @@ class JobHomeController extends Controller
             'job_card' => $jobHome->jobCard
         ]);
     }
-       public function index()
+    public function index()
     {
-        return JobHome::with('jobCard')->get();
+        return JobHome::with(['jobCard', 'customer'])->get();
     }
 }

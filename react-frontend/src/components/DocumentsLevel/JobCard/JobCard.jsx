@@ -640,11 +640,13 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
               <div
                 onClick={() => isEditing && setIsCalendarOpen(!isCalendarOpen)}
                 className={`w-full px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border-2 cursor-pointer
-                ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}
-                focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200
-                ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                  ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'}
+                  focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200
+                  ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}
+                  flex items-center justify-between`} // Added flexbox classes here
               >
                 {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : 'Select a date'}
+                <FaCalendarAlt className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
               </div>
             </div>
             <div

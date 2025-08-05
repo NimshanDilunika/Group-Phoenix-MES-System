@@ -2,10 +2,9 @@
 // Refactored for a more robust and flexible responsive design
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { ThemeContext } from "../ThemeContext/ThemeContext";
-import { BsSearch } from "react-icons/bs";
 import { FaSun } from 'react-icons/fa';
 import { BiBell, BiUserCircle } from "react-icons/bi";
-import { MdDarkMode, MdMenu } from "react-icons/md";
+import { MdDarkMode } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import { CompanySettingsContext } from '../../context/CompanySettingsContext';
 import axios from 'axios';
@@ -147,25 +146,8 @@ const TopDashboard = () => {
                     </Link>
                 </div>
 
-                {/* Right-aligned container for search, icons, and profile */}
+                {/* Right-aligned container for icons and profile */}
                 <div className="flex-grow flex flex-wrap items-center justify-end mt-3 sm:mt-0 gap-4 sm:gap-6">
-                    {/* Search bar, responsive width */}
-                    <div
-                        className={`flex items-center p-1 rounded-full border-2 transition-all duration-300 w-full sm:w-auto max-w-[150px] md:max-w-xs
-                            ${isDarkMode
-                                ? "bg-gray-800 border-gray-500 hover:border-blue-500 focus-within:ring-2 focus-within:ring-blue-300"
-                                : "bg-gray-100 border-gray-400 hover:border-blue-400 focus-within:ring-2 focus-within:ring-blue-300"
-                            }`}
-                    >
-                        <BsSearch className={`text-sm transition-all ${isDarkMode ? "text-white" : "text-black"}`} />
-                        <input
-                            className={`transition-all duration-300 bg-transparent outline-none ml-1 flex-grow h-5 text-xs
-                                ${isDarkMode ? "text-white placeholder-gray-400" : "text-black placeholder-gray-500"}`}
-                            type="text"
-                            placeholder="Search..."
-                        />
-                    </div>
-                    
                     {/* Icon group for theme, notifications, and profile */}
                     <div className="flex items-center gap-4 sm:gap-6">
                         {/* Theme Toggle Button */}

@@ -14,6 +14,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\JobCardController;
 use App\Http\Controllers\Api\JobHomeController;
+use App\Http\Controllers\Api\QuotationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,3 +110,12 @@ Route::get('/job-homes', [JobHomeController::class, 'index']);
 Route::get('/job-homes/{id}', [JobHomeController::class, 'show']);
 Route::post('/job-homes', [JobHomeController::class, 'store']);
 Route::put('/job-homes/{id}', [JobHomeController::class, 'update']);
+
+
+//Route::get('/job-homes/{jobCardId}/quotation', [QuotationController::class, 'itemshow']);
+Route::get('/quotations/{jobCardId}', [QuotationController::class, 'itemshow']);
+Route::put('/quotations/update-prices/{jobCardId}', [QuotationController::class, 'updatePrices']);
+Route::post('/quotations', [QuotationController::class, 'store']);
+Route::get('/test-quotation', [QuotationController::class, 'index']);
+
+Route::get('/job-cards/{jobCardId}/items', [JobCardController::class, 'showItemsForQuotation']);

@@ -289,7 +289,10 @@ const JobHome = ({ onGoBack, job }) => {
               {selectedComponent === "JobCard" && jobData?.job_home?.id && (
                 <JobCard jobHomeId={jobData.job_home.id} jobCardId={jobCardId} />
               )}
-              {selectedComponent === "Quotation" && <Quotation />}
+              {selectedComponent === "Quotation" && (
+                <Quotation jobCardId={jobCardId} />
+              )}
+
               {selectedComponent === "Invoice" && <Invoice />}
             </div>
           </div>

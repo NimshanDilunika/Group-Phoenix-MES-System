@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\JobCard;
@@ -195,5 +196,41 @@ class JobCardController extends Controller
         // Manually fetch items since the relationship might be incorrect
         $jobCard->setRelation('items', JobItem::where('job_home_id', $jobCard->job_home_id)->get());
         return response()->json($jobCard);
+    }
+
+    public function showItemsForQuotation($jobCardId)
+    {
+        try {
+            // Find the JobCard and its related JobItems directly
+            $jobCard = JobCard::where('id', $jobCardId)
+                              ->with('jobHome.jobItems')
+                              ->first();
+
+            if (!$jobCard) {
+                return response()->json(['message' => 'Job Card not found.'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Safely access the job items
+            $jobItems = $jobCard->jobHome->jobItems ?? collect();
+
+            // Map the items to a front-end friendly format
+            $items = $jobItems->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'materialsNo' => $item->materials_no,
+                    'description' => $item->materials,
+                    'unitPrice' => 0.0, // Default to 0 for a new quotation
+                    'quantity' => (int)$item->quantity,
+                    'unitTotalPrice' => 0.0,
+                ];
+            });
+
+            // Return the items
+            return response()->json($items, Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching job card items: ' . $e->getMessage());
+            return response()->json(['message' => 'Internal server error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

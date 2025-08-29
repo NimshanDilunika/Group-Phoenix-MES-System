@@ -606,6 +606,7 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
             isDarkMode ? 'text-gray-200' : 'text-gray-700'
           } flex items-center`}
         >
+<<<<<<< HEAD
           <FaInfoCircle className="mr-2 text-blue-400" /> Customer Information
         </h3>
         {expandedSections.customerInfo ? (
@@ -614,6 +615,42 @@ const JobCard = ({ jobHomeId, jobCardId: initialJobCardId }) => {
           <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
         )}
       </div>
+=======
+          <h3
+            className={`text-xl sm:text-2xl font-semibold ${
+              isDarkMode ? "text-gray-200" : "text-gray-700"
+            } flex items-center`}
+            >
+            <FaInfoCircle className="mr-2 text-blue-400" /> Customer Information
+          </h3>
+          {expandedSections.customerInfo ? (
+            <FaChevronUp className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+          ) : (
+            <FaChevronDown className={`text-base sm:text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+          )}
+        </div>
+        <div
+          className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.customerInfo ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}
+          style={{ maxHeight: expandedSections.customerInfo ? '1000px' : '0' }} // A large enough value
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Date Picker */}
+            <div className="col-span-full mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+              <label className={`font-semibold text-base sm:text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date:</label>
+              <div className="relative flex items-center w-full sm:w-auto flex-grow">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => isEditing && setSelectedDate(e.target.value)}
+                  readOnly={!isEditing}
+                  className={`w-full px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl border-2 ${isDarkMode ? 'bg-gray-700 text-gray-100 border-gray-600' : 'bg-white text-gray-900 border-gray-300'} focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-300 transition-all duration-200 ${!isEditing ? 'cursor-not-allowed opacity-70' : ''}`}
+                />
+              </div>
+              <div className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-base sm:text-lg font-bold ${isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
+                Job Card No: {jobCardId || "N/A"}
+              </div>
+            </div>
+>>>>>>> Maleesha
 
       {isEditing && isCalendarOpen && (
         <div className="absolute z-50 top-24 left-0 w-full flex justify-center px-4 sm:px-6 md:px-8">

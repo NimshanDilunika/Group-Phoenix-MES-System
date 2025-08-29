@@ -14,7 +14,11 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\JobCardController;
 use App\Http\Controllers\Api\JobHomeController;
+<<<<<<< HEAD
 use App\Http\Controllers\Api\ImageUploadController;
+=======
+use App\Http\Controllers\Api\QuotationController;
+>>>>>>> Maleesha
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +115,17 @@ Route::get('/job-homes/{id}', [JobHomeController::class, 'show']);
 Route::post('/job-homes', [JobHomeController::class, 'store']);
 Route::put('/job-homes/{id}', [JobHomeController::class, 'update']);
 
+<<<<<<< HEAD
 Route::post('/job-homes/{id}/images', [ImageUploadController::class, 'store']);
 Route::get('job-homes/{Id}/images', [ImageUploadController::class, 'getImages']);
 Route::delete('job-homes/{jobHomeId}/images/{imageId}', [ImageUploadController::class, 'destroy']);
+=======
+
+//Route::get('/job-homes/{jobCardId}/quotation', [QuotationController::class, 'itemshow']);
+Route::get('/quotations/{jobCardId}', [QuotationController::class, 'itemshow']);
+Route::put('/quotations/update-prices/{jobCardId}', [QuotationController::class, 'updatePrices']);
+Route::post('/quotations', [QuotationController::class, 'store']);
+Route::get('/test-quotation', [QuotationController::class, 'index']);
+
+Route::get('/job-cards/{jobCardId}/items', [JobCardController::class, 'showItemsForQuotation']);
+>>>>>>> Maleesha

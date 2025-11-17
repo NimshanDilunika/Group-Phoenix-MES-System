@@ -1,111 +1,224 @@
-import React, { useState, useContext } from "react";
-import { ThemeContext } from "../../components/ThemeContext/ThemeContext"; // Import Theme Context
-import IncomePieChart from "../../components/SummaryDashboard/IncomePieChart"; // Daily Income
-import JobStatusPieChart from "../../components/SummaryDashboard/JobStatusPieChart"; // Job Status
-import IncomeBarChart from "../../components/SummaryDashboard/IncomeBarChart"; // Monthly Income
-import exportElementToPDF from "../../components/Export Button/ExportPDF";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { ThemeContext } from "../../components/ThemeContext/ThemeContext";
+import IncomePieChart from "../../components/SummaryDashboard/IncomePieChart";
+import JobStatusPieChart from "../../components/SummaryDashboard/JobStatusPieChart";
+import IncomeBarChart from "../../components/SummaryDashboard/IncomeBarChart";
+import JobTitlePieChart from "../../components/SummaryDashboard/JobTitlePieChart";
+import TechnicianBarChart from "../../components/SummaryDashboard/TechnicianBarChart";
+import KeyMetrics from "../../components/SummaryDashboard/KeyMetrics";
+import PaymentLineChart from "../../components/SummaryDashboard/PaymentLineChart";
+import YearlyPaymentChart from "../../components/SummaryDashboard/YearlyPaymentChart";
+import Calendar from "../../components/Calender/Calender";
+import { motion } from 'framer-motion';
+import { FaCalendarAlt } from 'react-icons/fa';
+import LoadingItems from "../../components/Loading/LoadingItems";
 
 const Summary = () => {
+  const { isDarkMode } = useContext(ThemeContext);
 
-  const jobs = [
-    { id: 1, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "In Process", service: "Generator Services" },
-    { id: 31, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Todo", service: "Generator Services" },
-    { id: 32, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Ended", service: "Generator Services" },
-    { id: 33, title: "Generator Installation", company: "ABC Company", date: "05 March 2024", status: "Completed", service: "Generator Services" },
-    { id: 2, title: "Solar Panel Setup", company: "XYZ Corp", date: "10 March 2024", status: "Completed", service: "Solar Systems" },
-    { id: 3, title: "AC Maintenance", company: "HomeCare", date: "15 March 2024", status: "Todo", service: "Air Conditioning" },
-    { id: 4, title: "Generator Repair", company: "ABC Company", date: "20 March 2024", status: "Pending", service: "Generator Services" },
-    { id: 5, title: "Solar Installation", company: "SolarTech", date: "25 March 2024", status: "Cancelled", service: "Solar Systems" },
-    { id: 6, title: "AC Installation", company: "HomeCare", date: "30 March 2024", status: "In Process", service: "Air Conditioning", description: "Initial job registration" },
-    { id: 7, title: "HVAC System Setup", company: "ThermoTech", date: "01 April 2024", status: "In Process", service: "HVAC" },
-    { id: 8, title: "Solar Battery Backup", company: "Renew Power", date: "12 April 2024", status: "Pending", service: "Solar Systems" },
-    { id: 9, title: "Pool Heater Installation", company: "Aqua Solutions", date: "18 April 2024", status: "Completed", service: "Pool Services" },
-    { id: 10, title: "Wind Turbine Setup", company: "EcoPower", date: "23 April 2024", status: "In Process", service: "Wind Energy" },
-    { id: 11, title: "Roof Insulation", company: "HomeCare", date: "28 April 2024", status: "Todo", service: "Home Improvement" },
-    { id: 12, title: "Generator Maintenance", company: "ABC Company", date: "05 May 2024", status: "Cancelled", service: "Generator Services" },
-    { id: 13, title: "Solar Panel Replacement", company: "SolarTech", date: "11 May 2024", status: "Pending", service: "Solar Systems" },
-    { id: 14, title: "Air Duct Cleaning", company: "CleanAir", date: "20 May 2024", status: "Completed", service: "Air Conditioning" },
-    { id: 15, title: "Electrical Panel Upgrade", company: "ABC Company", date: "25 May 2024", status: "In Process", service: "Electrical Services" },
-    { id: 16, title: "Solar Energy Storage Installation", company: "Renew Power", date: "02 June 2024", status: "In Process", service: "Solar Systems" },
-    { id: 17, title: "Water Heater Replacement", company: "Plumbing Pros", date: "07 June 2024", status: "Pending", service: "Plumbing Services" },
-    { id: 18, title: "New AC Unit Installation", company: "HomeCare", date: "14 June 2024", status: "Completed", service: "Air Conditioning" },
-    { id: 19, title: "Wind Turbine Maintenance", company: "EcoPower", date: "19 June 2024", status: "Cancelled", service: "Wind Energy" },
-    { id: 20, title: "Solar Water Heater Installation", company: "SolarTech", date: "22 June 2024", status: "In Process", service: "Solar Systems" },
-    { id: 21, title: "Smart Thermostat Installation", company: "Smart Home", date: "25 June 2024", status: "Todo", service: "Home Automation" },
-    { id: 22, title: "Home Solar Panel Setup", company: "Green Energy", date: "01 July 2024", status: "In Process", service: "Solar Systems" },
-    { id: 23, title: "Water Filtration System Setup", company: "Pure Water", date: "08 July 2024", status: "Pending", service: "Plumbing Services" },
-    { id: 24, title: "Lighting Control System", company: "Smart Home", date: "15 July 2024", status: "Completed", service: "Home Automation" },
-    { id: 25, title: "Fireplace Installation", company: "HomeCare", date: "22 July 2024", status: "Pending", service: "Home Improvement" },
-    { id: 26, title: "Electric Vehicle Charger Installation", company: "EV Solutions", date: "29 July 2024", status: "In Process", service: "Electric Services" },
-    { id: 27, title: "Solar Panel Testing", company: "SolarTech", date: "03 August 2024", status: "Completed", service: "Solar Systems" },
-    { id: 28, title: "Electric Water Heater Setup", company: "Plumbing Pros", date: "10 August 2024", status: "In Process", service: "Plumbing Services" },
-    { id: 29, title: "Home Battery Backup", company: "Renew Power", date: "17 August 2024", status: "Pending", service: "Home Energy" },
-    { id: 30, title: "Solar Water Pump Installation", company: "SolarTech", date: "24 August 2024", status: "Completed", service: "Solar Systems" }
-  ];
+  // Loading state for page initialization
+  const [loading, setLoading] = useState(true);
 
-  const { isDarkMode } = useContext(ThemeContext); // Access dark mode state
-  const [activeTab, setActiveTab] = useState("jobStatus");
-  const currentDate = new Date().toLocaleDateString();
+  // State for selected dates
+  const [selectedDay, setSelectedDay] = useState(new Date());
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  
+  // State for showing calendars
+  const [showDailyCalendar, setShowDailyCalendar] = useState(false);
+  const [showMonthlyCalendar, setShowMonthlyCalendar] = useState(false);
+  const [showYearlyCalendar, setShowYearlyCalendar] = useState(false);
+
+  // State to toggle heading view
+  const [showAddItemHeading, setShowAddItemHeading] = useState(false);
+
+  // Refs for calendar containers
+  const dailyRef = useRef(null);
+  const monthlyRef = useRef(null);
+  const yearlyRef = useRef(null);
+
+  // Handlers for calendar selections
+  const handleDaySelect = (date) => {
+    setSelectedDay(date);
+    setShowDailyCalendar(false);
+  };
+
+  const handleMonthSelect = (date) => {
+    setSelectedMonth(date);
+    setShowMonthlyCalendar(false);
+  };
+
+  const handleYearSelect = (date) => {
+    setSelectedYear(date.getFullYear());
+    setShowYearlyCalendar(false);
+  };
+
+  // Effect to handle page loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Show loading for 1.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show loading component while page is initializing
+  if (loading) {
+    return <LoadingItems isDarkMode={isDarkMode} message="Loading Summary Dashboard..." size="large" />;
+  }
 
   return (
-    <div className={`p-8 min-h-screen ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
-      {/* ✅ Header Section */}
-      <div className={`flex justify-between items-center shadow-md p-6 rounded-lg mb-6 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
-        <div>
-        <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>📊 Financial & Job Summary</h1>
-          <p>{currentDate}</p>
+    <div className={`min-h-screen p-6 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <div className="flex justify-center mb-6">
+        
+      </div>
+
+       
+        <div className={`${isDarkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200'} rounded-xl p-6 shadow-lg flex justify-between items-center mb-8`}>
+          <div>
+            <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Summary Dashboard</h1>
+            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Monitor progress, track performance, and make informed decisions faster.</p>
+          </div>
         </div>
-        <button className={`${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-500 text-white hover:bg-blue-400'} px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md`} onClick={() => exportElementToPDF('report-content', 'summary-report.pdf')}>
-          Export Report
-        </button>
+
+      <KeyMetrics />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <IncomePieChart />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <JobStatusPieChart />
+        </motion.div>
       </div>
 
-      
-      
-      {/* ✅ Tabs Navigation */}
-      <div className="flex space-x-4 mb-6">
-        {["daily", "jobStatus", "monthly"].map((tab) => (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <JobTitlePieChart />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <TechnicianBarChart />
+        </motion.div>
+      </div>
+
+      {/* Calendars and charts for payment trends */}
+      <div className="grid grid-cols-1 gap-6 mb-6">
+        <div className="relative">
+        <div className="flex items-center justify-between mb-2">
           <button
-            key={tab}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              activeTab === tab
-                ? "bg-blue-500 text-white"
-                : isDarkMode
-                ? "bg-gray-700 text-white"
-                : "bg-gray-200"
+            onClick={() => setShowDailyCalendar(!showDailyCalendar)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow-sm transition-colors duration-200 ${
+              isDarkMode
+                ? "bg-gray-800 text-white hover:bg-gray-700"
+                : "bg-gray-100 text-gray-900 hover:bg-gray-200"
             }`}
-            onClick={() => setActiveTab(tab)}
           >
-            {tab === "daily" && "💰 Daily Income"}
-            {tab === "jobStatus" && "📋 Job Status"}
-            {tab === "monthly" && "📅 Monthly Income"}
+            <FaCalendarAlt
+              className={`text-xl ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}
+            />
+            <h3 className="text-base font-medium">Select Day</h3>
           </button>
-        ))}
+        </div>
+
+        {showDailyCalendar && (
+          <div
+            ref={dailyRef}
+            className={`absolute z-10 mt-2 left-0 rounded-xl shadow-lg border ${
+              isDarkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"
+            }`}
+          >
+            <Calendar selectedDate={selectedDay} onDateSelect={handleDaySelect} />
+          </div>
+        )}
+
+        <PaymentLineChart selectedDate={selectedDay} />
       </div>
 
+        <div className="relative">
+          <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setShowMonthlyCalendar(!showMonthlyCalendar)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow-sm transition-colors duration-200 ${
+              isDarkMode
+                ? "bg-gray-800 text-white hover:bg-gray-700"
+                : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+            }`}
+          >
+            <FaCalendarAlt
+              className={`text-xl ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}
+            />
+            <h3 className="text-base font-medium">Select Month</h3>
+          </button>
+        </div>
 
-      {/* ✅ Charts (Toggle Based on Tab) */}
-      <div className={`shadow-lg rounded-lg p-6 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
-        {activeTab === "daily" && (
-          <div id="report-content">
-            <h3 className="text-lg font-medium mb-4">💰 Daily Income</h3>
-            <IncomePieChart />
+        {showMonthlyCalendar && (
+        <div
+          ref={monthlyRef}
+          className={`absolute z-10 mt-2 left-0 rounded-xl shadow-lg border ${
+            isDarkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"
+          }`}
+        >
+          <Calendar
+            selectedDate={selectedMonth}
+            onDateSelect={handleMonthSelect}
+            isDarkMode={isDarkMode} // keep theme consistent
+          />
+        </div>
+      )}
+
+          <IncomeBarChart year={selectedMonth.getFullYear()} month={selectedMonth.getMonth() + 1} />
+        </div>
+        <div className="relative">
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setShowYearlyCalendar(!showYearlyCalendar)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow-sm transition-colors duration-200 ${
+              isDarkMode
+                ? "bg-gray-800 text-white hover:bg-gray-700"
+                : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+            }`}
+          >
+            <FaCalendarAlt
+              className={`text-xl ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}
+            />
+            <h3 className="text-base font-medium">Select Year</h3>
+          </button>
+        </div>
+
+        {showYearlyCalendar && (
+          <div
+            ref={yearlyRef}
+            className={`absolute z-10 mt-2 left-0 rounded-xl shadow-lg border ${
+              isDarkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"
+            }`}
+          >
+            <Calendar
+              selectedDate={new Date(selectedYear, 0, 1)}
+              onDateSelect={handleYearSelect}
+              isDarkMode={isDarkMode}
+            />
           </div>
         )}
-        {activeTab === "jobStatus" && (
-          <div id="report-content">
-            <h3 className="text-lg font-medium mb-4">📋 Job Status</h3>
-            <JobStatusPieChart jobs={jobs}/>
-          </div>
-        )}
-        {activeTab === "monthly" && (
-          <div id="report-content">
-            <h3 className="text-lg font-medium mb-4">📅 Monthly Income</h3>
-            <IncomeBarChart />
-          </div>
-        )}
+
+        <YearlyPaymentChart selectedYear={selectedYear} />
+      </div>
+
       </div>
     </div>
   );

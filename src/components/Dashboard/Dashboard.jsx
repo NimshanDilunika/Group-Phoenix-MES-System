@@ -5,9 +5,12 @@ import TopDashboard from "../TopDashboard/TopDashboard";
 import Home from "../../pages/home/home";
 import AddItem from "../../pages/additem/additem";
 import Adduser from "../../pages/adduser/adduser";
+import AddCustomer from "../../pages/addCustomer/addcustomer";
 import Summary from "../../pages/summary/summary";
 import Settings from "../../pages/settings/settings";
 import ProfileSettings from "../../pages/Profile/ProfileSettings";
+import JobHome from "../../pages/JobHome/JobHome";
+import NotificationPage from "../../pages/NotificationPage/NotificationPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -28,9 +31,12 @@ const Dashboard = () => {
             <Route path="/summary" element={<Summary />} />
             <Route path="/additem" element={<AddItem />} />
             <Route path="/adduser" element={<Adduser />} />
+            <Route path="/addcustomer" element={<AddCustomer />} />
             <Route path="/settings" element={<Settings />} />
 
             <Route path="/ProfileSettings" element={<ProfileSettings />} />
+            <Route path="/job-home/:id" element={<JobHome />} />
+            <Route path="/notifications" element={<NotificationPage />} />
 
             {/* Add other routes here */}
           </Routes>

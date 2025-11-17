@@ -1,52 +1,67 @@
-import React from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
-//console.log("Jobs Data in JobStatusPieChart:", jobs);
-
+import React, { useEffect, useState, useContext } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import axios from 'axios';
+import { ThemeContext } from '../ThemeContext/ThemeContext';
 
 const JobStatusPieChart = ({ jobs }) => {
-  if (!Array.isArray(jobs)) {
-    console.error("Expected jobs to be an array but received", jobs);
-    return null;
-  }
-  // Count occurrences of each job status
-  const statusCounts = jobs.reduce((acc, job) => {
-    const status = job.status?.trim();
-    if(status){
-      acc[job.status] = (acc[job.status] || 0) + 1;
+  const { isDarkMode } = useContext(ThemeContext);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    if (jobs) {
+      const processedData = processJobData(jobs);
+      setData(processedData);
+    } else {
+      const fetchJobs = async () => {
+        try {
+          const token = localStorage.getItem('authToken');
+          const response = await axios.get('http://localhost:8000/api/job-homes', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const processedData = processJobData(response.data);
+          setData(processedData);
+        } catch (error) {
+          console.error('Error fetching jobs:', error);
+        }
+      };
+      fetchJobs();
     }
-    return acc;
-  }, {});
+  }, [jobs]);
 
-  // Convert statusCounts to array format for recharts
-  const data = Object.entries(statusCounts).map(([status, count]) => ({
-    name: status,
-    value: count,
-  }));
+  const processJobData = (jobs) => {
+    const statusCount = jobs.reduce((acc, job) => {
+      const status = job.job_status || 'Unknown';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(statusCount).map(([name, value]) => ({ name, value }));
+  };
 
-  // Define colors for the chart
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6666"];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   return (
-    <div className="flex flex-col items-center p-6 shadow-lg rounded-2xl">
-      <h2 className="text-xl font-semibold mb-4">Job Status Summary</h2>
-      <PieChart width={600} height={400}>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          outerRadius={150}
-          fill="#8884d8"
-          dataKey="value"
-          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
+    <div className={`p-4 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+      <h3 className="text-lg font-semibold mb-4">Job Status Summary</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            outerRadius={80}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 };
